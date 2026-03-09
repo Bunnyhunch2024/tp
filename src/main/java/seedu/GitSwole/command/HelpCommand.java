@@ -46,8 +46,8 @@ public class HelpCommand extends Command{
 		System.out.println("-".repeat(consoleWidth));
 
 		// Commands
-		System.out.printf(format, "Add Workout", "addworkout w/WORKOUT", "addworkout w/push");
-		System.out.printf(format, "Add Exercise", "addexercise e/EXERCISE w/WORKOUT [wt] [s] [r]", "addexercise e/benchpress w/push 40 3 8");
+		System.out.printf(format, "Add Workout", "add w/WORKOUT", "add w/push");
+		System.out.printf(format, "Add Exercise", "add e/EXERCISE w/WORKOUT [wt/WEIGHT] [s/SETS] [r/REPS]", "add e/benchpress w/push 40 3 8");
 		System.out.printf(format, "Delete Workout", "deleteworkout w/WORKOUT", "deleteworkout w/push");
 		System.out.printf(format, "Delete Exercise", "deleteexercise e/EXERCISE w/WORKOUT", "deleteexercise e/benchpress w/push");
 		System.out.printf(format, "List Workouts", "list", "list");

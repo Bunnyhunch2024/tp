@@ -51,9 +51,18 @@ public class WorkoutList {
 	 * @param name The name of the workout to find.
 	 * @return The matching {@link Workout}, or {@code null} if not found.
 	 */
+//	public Workout getWorkoutByName(String name) {
+//		Workout workoutToSearch = new Workout(name);
+//		int idx = workouts.indexOf(workoutToSearch);
+//		return workouts.get(idx);
+//	}
+
 	public Workout getWorkoutByName(String name) {
-		Workout workoutToSearch = new Workout(name);
-		int idx = workouts.indexOf(workoutToSearch);
-		return workouts.get(idx);
+		for (Workout w : workouts) {
+			if (w.getWorkoutName().equalsIgnoreCase(name.trim())) {
+				return w;
+			}
+		}
+		return null;
 	}
 }

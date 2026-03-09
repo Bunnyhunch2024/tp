@@ -83,4 +83,41 @@ public class Parser {
 		}
 		return type;
 	}
+
+	/**
+	 * Helper method to extract a string value following a specific prefix.
+	 *
+	 * @param input The full command string.
+	 * @param prefix The prefix to look for (e.g., "w/").
+	 * @return The value associated with the prefix, or null if prefix not found.
+	 */
+	 public static String parseValue(String input, String prefix) {
+		 if (!input.contains(prefix)) {
+			 return null;
+		 }
+
+		 int start = input.indexOf(prefix) + prefix.length();
+		 int end = input.indexOf(" ", start);
+		 if (end == -1) {
+			 end = input.length();
+		 }
+		 return input.substring(start, end).trim();
+	 }
+
+	/**
+	 * Helper method to parse an integer following a prefix, returning a default if missing.
+	 *
+	 * @param input The full command string.
+	 * @param prefix The prefix to look for (e.g., "wt/").
+	 * @param defaultValue The value to return if parsing fails or prefix is missing.
+	 * @return The parsed integer or default value.
+	 */
+	 public static int parseOptionalInt(String input, String prefix, int defaultValue) {
+		 String value = parseValue(input, prefix);
+		 try {
+			 return (value != null) ? Integer.parseInt(value) : defaultValue;
+		 } catch (NumberFormatException e) {
+		 	return defaultValue;
+		 }
+	 }
 }
