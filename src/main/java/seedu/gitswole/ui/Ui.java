@@ -35,15 +35,15 @@ public class Ui {
      * Displays the application logo and a welcome message on startup.
      */
     public void helloGreeting() {
-        String logo =
-            "   _____ _ _  _____               _      \n"
-                + "  / ____(_) |/ ____|             | |     \n"
-                + " | |  __ _| | (___  __      _____| | ___ \n"
-                + " | | |_ | | |\\___ \\ \\ \\ /\\ / / _ \\ |/ _ \\\n"
-                + " | |__| | | |____) | \\ V  V / (_) | |  __/\n"
-                + "  \\_____|_|_|_____/   \\_/\\_/ \\___/|_|\\___|\n";
+        showMessage(" _____ _ _   _____               _      ");
+        showMessage("|  __ (_) | /  ___|             | |     ");
+        showMessage("| |  \\/_| |_\\ `--.__      _____ | | ___ ");
+        showMessage("| | __| | __|`--. \\ \\ /\\ / / _ \\| |/ _ \\");
+        showMessage("| |_\\ \\ | |_/\\__/ /\\ V  V / (_) | |  __/");
+        showMessage(" \\____/_|\\__\\____/  \\_/\\_/ \\___/|_|\\___|");
+        showMessage("                                        ");
+        showMessage("                                        ");
 
-        showMessage(logo);
         showMessage("Welcome to GitSwole! LET'S GET THEM GAINS");
         showLine();
     }
