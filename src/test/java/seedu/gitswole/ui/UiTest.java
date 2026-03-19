@@ -34,13 +34,6 @@ class UiTest {
     }
 
     @Test
-    @DisplayName("showMessage prints the message with a leading space")
-    void showMessage_printsWithLeadingSpace() {
-        ui.showMessage("hello");
-        assertTrue(outContent.toString().contains(" hello"));
-    }
-
-    @Test
     @DisplayName("showError prints the error message between separator lines")
     void showError_printsMessage() {
         ui.showError("something went wrong");

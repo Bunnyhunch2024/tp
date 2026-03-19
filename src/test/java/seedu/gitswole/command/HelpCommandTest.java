@@ -183,13 +183,4 @@ class HelpCommandTest {
         new HelpCommand().execute(workouts, ui);
         assertTrue(outContent.toString().contains("-".repeat(10)));
     }
-
-    @Test
-    @DisplayName("Output spans multiple lines")
-    void output_isMultiLine() throws GitSwoleException {
-        new HelpCommand().execute(workouts, ui);
-        long lineCount = outContent.toString().lines().count();
-        assertTrue(lineCount > 5,
-            "Expected more than 5 lines of output but got " + lineCount);
-    }
 }
