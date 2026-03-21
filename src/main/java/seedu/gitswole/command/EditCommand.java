@@ -19,6 +19,7 @@ public class EditCommand extends Command{
 
     @Override
     public void execute(WorkoutList workouts, Ui ui) throws GitSwoleException {
+        assert response != null : "Response cannot be null";
         if (response.contains(" e/")) {
             handleEditExercise(workouts, ui);
         } else {
@@ -42,6 +43,8 @@ public class EditCommand extends Command{
             LOGGER.log(Level.WARNING, "EditWorkout failed: Workout provided does not exist.");
             throw new GitSwoleException(GitSwoleException.ErrorType.NOT_FOUND , workoutToEditString);
         }
+        assert workoutToEdit != null : "workoutToEdit should not be null here";
+
         printCurrentWorkout(ui, workoutToEditString);
 
         changeWorkoutName(ui, workoutToEdit);
@@ -67,12 +70,15 @@ public class EditCommand extends Command{
             LOGGER.log(Level.WARNING, "EditWorkout failed: Workout provided does not exist.");
             throw new GitSwoleException(GitSwoleException.ErrorType.NOT_FOUND , workoutToEditString);
         }
+        assert workoutToEdit != null : "workoutToEdit should not be null here";
+
         ui.showMessage(exerciseToEditString);
         Exercise exerciseToEdit = workoutToEdit.getExerciseByName(exerciseToEditString);
         if (exerciseToEdit == null) {
             LOGGER.log(Level.WARNING, "EditWorkout failed: Exercise provided does not exist.");
             throw new GitSwoleException(GitSwoleException.ErrorType.NOT_FOUND , exerciseToEditString);
         }
+        assert exerciseToEdit != null : "exerciseToEdit cannot be null";
 
         printCurrentExercise(ui, workoutToEditString, exerciseToEdit);
 
@@ -143,6 +149,8 @@ public class EditCommand extends Command{
         if (newExerciseName == null || newExerciseName.isEmpty()) {
             return;
         }
+        assert exerciseToEdit != null : "exerciseToEdit cannot be null";
+
         exerciseToEdit.setExerciseName(newExerciseName);
         this.hasChanged = true;
     }
@@ -154,6 +162,7 @@ public class EditCommand extends Command{
         if (newWorkoutName == null || newWorkoutName.isEmpty()) {
             return;
         }
+        assert workoutToEdit != null : "workoutToEdit cannot be null";
 
         workoutToEdit.setWorkoutName(newWorkoutName);
         this.hasChanged = true;
