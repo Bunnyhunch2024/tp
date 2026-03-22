@@ -4,7 +4,7 @@ WORKOUT | legs | false
 EXERCISE | legpress | 0 | 0 | 0
 ---
 WORKOUT | push | false
-EXERCISE | benchpress | 65 | 3 | 10
-EXERCISE | tricep pushdown | 25 | 3 | 10
-EXERCISE | shoulder press | 0 | 0 | 0
+EXERCISE | benchpress | 67 | 3 | 10
+EXERCISE | tricep pushdown | 27 | 3 | 10
+EXERCISE | shoulder press | 20 | 3 | 8
 ---

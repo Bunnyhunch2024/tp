@@ -5,8 +5,10 @@ import seedu.gitswole.assets.Workout;
 import seedu.gitswole.assets.WorkoutList;
 import seedu.gitswole.exceptions.GitSwoleException;
 import seedu.gitswole.parser.Parser;
+import seedu.gitswole.storage.HistoryStorage;
 import seedu.gitswole.ui.Ui;
 
+import java.io.IOException;
 import java.util.logging.Level;
 
 /**
@@ -16,12 +18,13 @@ import java.util.logging.Level;
  * <ul>
  *   <li>{@code log w/WORKOUT_NAME} — starts a session and lists exercises</li>
  *   <li>{@code log e/EXERCISE_NAME [w/WORKOUT_NAME] [wt/WEIGHT] [s/SETS] [r/REPS]} 
- *   — updates stats for an exercise. If {@code w/} is omitted, the most recent 
- *   active session name is used.</li>
+ *   — updates stats for an exercise and appends to history log. 
+ *   If {@code w/} is omitted, the most recent active session name is used.</li>
  * </ul>
  */
 public class LogCommand extends Command {
     private String response;
+    private HistoryStorage historyStorage = new HistoryStorage();
 
     /**
      * Constructs a LogCommand with the raw user input string.
@@ -53,7 +56,7 @@ public class LogCommand extends Command {
     }
 
     /**
-     * Starts a logging session for a specific workout and displays the exercise list.
+     * Starts a logging session for a specific workout and records the header in history.
      *
      * @param workouts The list of available workouts.
      * @param ui       The UI to display the session start message.
@@ -72,6 +75,14 @@ public class LogCommand extends Command {
             throw new GitSwoleException(GitSwoleException.ErrorType.NOT_FOUND, workoutName);
         }
 
+        // Record the session start in the history file
+        try {
+            historyStorage.writeSeparator();
+            historyStorage.writeSessionHeader(workout.getWorkoutName());
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to write session header to history: " + e.getMessage());
+        }
+
         // Set the "sticky" active session name
         workouts.setActiveWorkoutName(workout.getWorkoutName());
 
@@ -85,7 +96,7 @@ public class LogCommand extends Command {
     }
 
     /**
-     * Updates the performance statistics for a specific exercise within a workout.
+     * Updates the performance statistics for a specific exercise and records it in history.
      * Uses the active workout session if the {@code w/} flag is omitted.
      *
      * @param workouts The list of available workouts.
@@ -128,6 +139,13 @@ public class LogCommand extends Command {
         exercise.setWeight(weight);
         exercise.setSets(sets);
         exercise.setReps(reps);
+
+        // Record the exercise log in the history file
+        try {
+            historyStorage.writeExerciseLog(exercise);
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to write exercise log to history: " + e.getMessage());
+        }
 
         ui.showMessage("Stats updated for " + exerciseName + " in " + workoutName + "!");
         ui.printExercises(workout.getExerciseList());

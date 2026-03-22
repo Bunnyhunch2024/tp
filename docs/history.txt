@@ -1,0 +1,5 @@
+--------------------------------------------
+[22-03-2026, 22:13] PUSH workout
+benchpress:       :   67kg |  3 sets | 10 reps
+tricep pushdown:  :   27kg |  3 sets | 10 reps
+shoulder press:   :   20kg |  3 sets |  8 reps
