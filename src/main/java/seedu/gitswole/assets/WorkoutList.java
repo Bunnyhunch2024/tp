@@ -8,12 +8,31 @@ import java.util.ArrayList;
  */
 public class WorkoutList {
     private ArrayList<Workout> workouts;
+    private String activeWorkoutName = null;
 
     /**
      * Constructs an empty WorkoutList.
      */
     public WorkoutList() {
         workouts = new ArrayList<>();
+    }
+
+    /**
+     * Sets the name of the workout currently being logged.
+     *
+     * @param name The name of the active workout.
+     */
+    public void setActiveWorkoutName(String name) {
+        this.activeWorkoutName = name;
+    }
+
+    /**
+     * Returns the name of the workout currently being logged.
+     *
+     * @return The active workout name, or {@code null} if no session is active.
+     */
+    public String getActiveWorkoutName() {
+        return activeWorkoutName;
     }
 
     /**
