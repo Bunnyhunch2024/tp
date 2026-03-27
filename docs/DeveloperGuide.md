@@ -1,5 +1,12 @@
 # Developer Guide
 
+## Setup Guide
+### Steps
+1. {Step one e.g., Clone the repository: git clone https://github.com/your-repo}
+2. {Step two e.g., Install dependencies}
+3. {Step three e.g., Run the application}
+Workout Logging and Smart Overwriting Feature
+
 ## Acknowledgements
 
 The **Architecture Diagram** below gives a high-level design overview of GitSwole.
@@ -36,7 +43,6 @@ Each of the four main components:
 
 {Describe the design and implementation of the product. Use UML diagrams and short code snippets where applicable.}
 
-Workout Logging and Smart Overwriting Feature
 The logging mechanism allows users to record their workout sessions and track specific exercise statistics. 
 It is facilitated primarily by the LogCommand class, which interacts with the WorkoutList (in-memory state) 
 and HistoryStorage (persistent state).
@@ -141,7 +147,10 @@ DRY principle since all three operations rely on the same UI rendering methods a
 |v2.0|user|find a to-do item by name|locate a to-do without having to go through the entire list|
 
 ## Non-Functional Requirements
-
+Performance:
+Security:
+Maintainability:
+Portability:
 {Give non-functional requirements}
 
 ## Glossary
