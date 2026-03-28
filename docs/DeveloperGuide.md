@@ -1,10 +1,22 @@
 # Developer Guide
 
+## Setup Guide
+### Steps
+1. Clone the repository to your local machine:
+   ```bash
+   git clone https://github.com/AY2526S2-CS2113-W10-3/tp
+2. navigate into the project directory:
+   ```bash
+   cd tp
+3. Run the application using Gradle:
+   ```bash
+   ./gradlew run
+
 ## Acknowledgements
 
 The **Architecture Diagram** below gives a high-level design overview of GitSwole.
 
-<img src="diagrams/ArchitectureDiagram.png" width="450" />
+<img src="diagrams\architecture\ArchitectureDiagram.png" width="450" />
 
 Given below is a quick overview of the main components and how they interact with each other.
 
@@ -15,9 +27,9 @@ Given below is a quick overview of the main components and how they interact wit
 - At shut down (when `Command.isExit()` returns `true`), the loop exits cleanly and the application terminates.
 
 The bulk of the app's work is done by the following four components:
-- [**`UI`**](#ui-component): The UI of the App — reads user input and displays all output.
-- [**`Parser`**](#parser-component): The command interpreter — translates raw user input strings into executable `Command` objects.
-- [**`Command`**](#command-component): The command executor — each subclass encapsulates the logic for one specific operation.
+- [**`UI`**](#ui-component): The UI of the App - reads user input and displays all output.
+- [**`Parser`**](#parser-component): The command interpreter - translates raw user input strings into executable `Command` objects.
+- [**`Command`**](#command-component): The command executor - each subclass encapsulates the logic for one specific operation.
 - [**`Storage`**](#storage-component): Reads data from, and writes data to, the hard disk.
 
 **`Assets`** represents the in-memory data model, consisting of `WorkoutList`, `Workout`, and `Exercise`. **`Commons`** contains shared utility classes (e.g., `GitSwoleException`) used across all components.
@@ -26,11 +38,118 @@ The bulk of the app's work is done by the following four components:
 
 The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `add w/Push Day`.
 
-<img src="diagrams/ArchitectureSequenceDiagram.png" width="574" />
+<img src="diagrams/architecture/ArchitectureSequenceDiagram.png" width="574" />
 
 Each of the four main components:
 - defines its API through a well-scoped class boundary.
 - implements its functionality using a concrete class that can be substituted or tested independently.
+
+### UI Component
+
+**API:** `Ui.java`
+
+The `Ui` component handles all interaction with the user - it reads raw input and
+renders all output to the console. It has no knowledge of business logic or the data model.
+
+It exposes the following key operations:
+- `helloGreeting(WorkoutList)` - renders the startup banner, progress snapshot, and tier status.
+- `byeGreeting()` - renders a goodbye message when the application terminates
+- `readCommand()` - reads a single line of input from `System.in`.
+- `showMessage(String)` - prints any general output line.
+- `showError(String)` - prints a formatted error message wrapped in separator lines.
+- `printWorkouts(ArrayList<Workout>)` - iterates through and prints all workouts and their exercises.
+- `printWorkout(Workout)` - prints a single workout and its exercise list.
+- `showLine()` - prints a horizontal separator for visual clarity.
+
+> **Note:** `Ui` provides an overloaded constructor `Ui(InputStream in)` used exclusively
+> for testing, allowing simulated input to be injected without modifying the production code path.
+
+<img src="diagrams/architecture/Ui/UiComponent.png" width="400" />
+
+---
+
+### Parser Component
+
+**API:** `Parser.java`
+
+The `Parser` component receives the raw input string from `GitSwole` and maps it to the
+correct `Command` subclass. It uses an internal `HashMap<String, CommandType>` to perform
+O(1) keyword lookups, avoiding long if-else chains.
+
+It exposes the following key operations:
+- `readResponse(String, WorkoutList)` - the main entry point; parses the full input string
+  and returns a ready-to-execute `Command` object.
+- `parseValue(String, String)` *(static)* - extracts the value of a named flag
+  (e.g. `w/`, `e/`, `wt/`) from the input string using regex boundary detection.
+- `parseOptionalInt(String, String, int)` *(static)* - extracts an optional integer flag
+  value, returning a default if the flag is absent or malformed.
+
+The following commands are currently recognised:
+
+| Keyword | Maps to |
+|---|---|
+| `add` | `AddCommand` |
+| `delete` | `DeleteCommand` |
+| `edit` | `EditCommand` |
+| `find` | `FindCommand` |
+| `list` | `ListCommand` |
+| `mark` / `unmark` | `MarkCommand` |
+| `log` | `LogCommand` |
+| `loglist` | `LogListCommand` |
+| `help` | `HelpCommand` |
+| `exit` | `ExitCommand` |
+
+> **Note:** `parseValue` and `parseOptionalInt` are `public static` methods, allowing
+> `Command` subclasses to reuse the same flag-parsing logic directly without re-instantiating
+> a `Parser`.
+
+<img src="diagrams/architecture/Parser/ParserComponent.png" width="500" />
+
+---
+
+### Command Component
+
+**API:** `Command.java`
+
+The `Command` component defines the contract that all executable actions must follow.
+`Command` is an abstract class with a single abstract method:
+
+```java
+public abstract void execute(WorkoutList workouts, Ui ui) throws GitSwoleException;
+```
+
+Each concrete subclass encapsulates the full logic for exactly one user-facing operation.
+The subclasses are:
+
+- `AddCommand` - adds a new `Workout` or `Exercise` to the `WorkoutList`.
+- `DeleteCommand` - removes a `Workout` or `Exercise` by index.
+- `EditCommand` - modifies the name of an existing `Workout` or `Exercise`.
+- `FindCommand` - searches for workouts by keyword.
+- `ListCommand` - lists workouts at summary, workout-specific, or full-detail scope.
+- `MarkCommand` - marks or unmarks a `Workout` as done.
+- `LogCommand` - initialises a workout logging session or logs an individual exercise stat.
+- `LogListCommand` - displays the full workout history from `HistoryStorage`.
+- `HelpCommand` - displays all available commands and their formats.
+- `ExitCommand` - sets `isExit = true` to signal the main loop to terminate.
+
+The `isExit()` method is defined in the base class and returns `false` for all commands
+except `ExitCommand`, which overrides it to return `true`.
+
+<img src="diagrams/architecture/Command/CommandComponent.png" width="962" />
+
+---
+
+### Storage Component
+
+**API:** `Storage.java`, `HistoryStorage.java`
+
+The `Storage` component is responsible for persisting and loading application data
+to and from plain text files on disk. It is split into two classes with distinct responsibilities:
+
+**`Storage.java`** manages the primary workout data file. It uses a structured
+pipe-delimited format:
+
+<img src="diagrams/architecture/Storage/StorageComponent.png" width="962" />
 
 ## Design & implementation
 

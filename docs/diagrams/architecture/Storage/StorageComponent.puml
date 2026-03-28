@@ -1,0 +1,41 @@
+@startuml
+!pragma layout smetana
+hide circle
+skinparam classAttributeIconSize 0
+
+class Storage {
+    - filePath : String
+    + Storage(filePath : String)
+    + save(workouts : WorkoutList) : void
+    + load() : WorkoutList
+}
+
+class HistoryStorage {
+    - filePath : String
+    + HistoryStorage(filePath : String)
+    + writeSessionHeader(workoutName : String) : void
+    + hasSessionToday() : boolean
+    + updateExerciseLog(name : String, weight : int, sets : int, reps : int) : void
+}
+
+class WorkoutList
+class Workout
+
+Storage "1" --> "1" WorkoutList  : reads/writes
+Storage ..> Workout              : uses
+
+HistoryStorage ..> WorkoutList   : reads
+
+note right of HistoryStorage
+  Managed by LogCommand via
+  dependency injection.
+  Not called in main save loop.
+end note
+
+note bottom of Storage
+  File format: pipe-delimited
+  WORKOUT | name | isDone
+  EXERCISE | name | wt | sets | reps
+end note
+
+@enduml

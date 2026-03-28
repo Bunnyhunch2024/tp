@@ -1,0 +1,57 @@
+@startuml
+!pragma layout smetana
+hide footbox
+
+actor User
+
+participant ":GitSwole" as Main
+participant ":Ui" as UI
+participant ":Parser" as Parser
+participant ":WorkoutList" as WL
+participant ":Storage"  as Storage
+
+activate Main
+
+Main -> UI : readCommand()
+activate UI
+User -> UI : "add w/Push Day"
+Main <-- UI : input
+deactivate UI
+
+Main -> Parser : readResponse(input, workoutList)
+activate Parser
+
+create participant ":AddCommand" as Cmd
+Parser -> Cmd : <<create>>
+activate Cmd
+Parser <-- Cmd :
+deactivate Cmd
+
+Main <-- Parser : addCommand
+deactivate Parser
+
+Main -> Cmd : execute(workoutList, ui)
+activate Cmd
+
+Cmd -> WL : addWorkout(workout)
+activate WL
+Cmd <-- WL :
+deactivate WL
+
+Cmd -> UI : showMessage(message)
+activate UI
+UI --> User : displays success message
+Cmd <-- UI :
+deactivate UI
+
+Main <-- Cmd :
+deactivate Cmd
+
+Main -> Storage : save(workoutList)
+activate Storage
+Main <-- Storage :
+deactivate Storage
+
+deactivate Main
+
+@enduml

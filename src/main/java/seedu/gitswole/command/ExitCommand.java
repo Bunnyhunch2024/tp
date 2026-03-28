@@ -26,6 +26,7 @@ public class ExitCommand extends Command {
     @Override
     public void execute(WorkoutList workouts, Ui ui) throws GitSwoleException {
         super.isExit = true;
+        ui.byeGreeting();
     }
 
 }

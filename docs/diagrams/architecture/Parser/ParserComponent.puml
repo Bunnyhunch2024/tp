@@ -1,0 +1,48 @@
+@startuml
+!pragma layout smetana
+hide circle
+skinparam classAttributeIconSize 0
+
+class Parser {
+    - commandMap : HashMap
+    + readResponse(input : String, workouts : WorkoutList) : Command
+    + {static} parseValue(input : String, flag : String) : String
+    + {static} parseOptionalInt(input : String, flag : String, defaultVal : int) : int
+}
+
+abstract class Command {
+    + {abstract} execute(workouts : WorkoutList, ui : Ui) : void
+    + isExit() : boolean
+}
+
+class AddCommand
+class DeleteCommand
+class EditCommand
+class FindCommand
+class ListCommand
+class MarkCommand
+class LogCommand
+class LogListCommand
+class HelpCommand
+class ExitCommand
+
+Command <|-- AddCommand
+Command <|-- DeleteCommand
+Command <|-- EditCommand
+Command <|-- FindCommand
+Command <|-- ListCommand
+Command <|-- MarkCommand
+Command <|-- LogCommand
+Command <|-- LogListCommand
+Command <|-- HelpCommand
+Command <|-- ExitCommand
+
+Parser ..> Command : creates
+
+note bottom of Parser
+  parseValue() and parseOptionalInt()
+  are public static — reusable by
+  Command subclasses directly.
+end note
+
+@enduml

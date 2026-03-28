@@ -1,0 +1,46 @@
+@startuml
+!pragma layout smetana
+hide circle
+skinparam classAttributeIconSize 0
+
+class WorkoutList {
+    - workouts : ArrayList
+    - activeWorkoutName : String
+    + addWorkout(workout : Workout) : void
+    + deleteWorkout(index : int) : void
+    + getWorkout(index : int) : Workout
+    + numOfWorkouts() : int
+    + numOfCompletedWorkouts() : int
+    + numOfTotalExercises() : int
+    + setActiveWorkoutName(name : String) : void
+    + getActiveWorkoutName() : String
+}
+
+class Workout {
+    - name : String
+    - isDone : boolean
+    - exercises : ArrayList
+    + addExercise(exercise : Exercise) : void
+    + deleteExercise(index : int) : void
+    + getExercise(index : int) : Exercise
+    + markDone() : void
+    + markUndone() : void
+    + isDone() : boolean
+}
+
+class Exercise {
+    - name : String
+    - weight : int
+    - sets : int
+    - reps : int
+    + getName() : String
+    + getWeight() : int
+    + getSets() : int
+    + getReps() : int
+}
+
+WorkoutList "1" *-- "0..*" Workout  : contains
+Workout     "1" *-- "0..*" Exercise : contains
+
+
+@enduml

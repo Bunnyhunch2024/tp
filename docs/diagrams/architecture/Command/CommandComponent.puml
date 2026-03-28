@@ -1,0 +1,50 @@
+@startuml
+!pragma layout smetana
+hide circle
+skinparam classAttributeIconSize 0
+
+abstract class Command {
+    # isExit : boolean = false
+    + {abstract} execute(workouts : WorkoutList, ui : Ui) : void
+    + isExit() : boolean
+}
+
+class AddCommand
+class DeleteCommand
+class EditCommand
+class FindCommand
+class ListCommand
+class MarkCommand
+
+class LogCommand {
+    - historyStorage : HistoryStorage
+    + execute(workouts : WorkoutList, ui : Ui) : void
+}
+
+class LogListCommand
+class HelpCommand
+class ExitCommand
+
+' Added explicitly to show the association target
+class HistoryStorage
+
+Command <|-- AddCommand
+Command <|-- DeleteCommand
+Command <|-- EditCommand
+Command <|-- FindCommand
+Command <|-- ListCommand
+Command <|-- MarkCommand
+Command <|-- LogCommand
+Command <|-- LogListCommand
+Command <|-- HelpCommand
+Command <|-- ExitCommand
+
+' Dependencies (Passed as parameters)
+Command ..> WorkoutList : operates on >
+Command ..> Ui          : uses >
+
+' Directed Association (Stored as a class field)
+LogCommand --> "1" HistoryStorage : saves to >
+
+
+@enduml

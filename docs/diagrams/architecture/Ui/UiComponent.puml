@@ -1,0 +1,30 @@
+@startuml
+!pragma layout smetana
+hide circle
+skinparam classAttributeIconSize 0
+
+class Ui {
+    - scanner : Scanner
+    + Ui()
+    + Ui(in : InputStream)
+    + readCommand() : String
+    + helloGreeting(workouts : WorkoutList) : void
+    + showMessage(message : String) : void
+    + showError(message : String) : void
+    + printWorkouts(workouts : ArrayList) : void
+    + printWorkout(workout : Workout) : void
+    + showLine() : void
+}
+
+class WorkoutList
+class Workout
+
+Ui ..> WorkoutList : uses
+Ui ..> Workout     : uses
+
+note right of Ui
+  Overloaded constructor Ui(InputStream)
+  is used for testing only.
+end note
+
+@enduml
