@@ -51,6 +51,8 @@ Given below are my contributions to the project.
 ### Project Management
 
 * Created and published the first release `v1.1.jar` file on GitHub. 
+* Created and published the second release `v2.0.jar` file on GitHub, along with the PDF documents.
+* Created the team repository at the start.
 
 ---
 
@@ -85,4 +87,4 @@ character.
 ## Community
 
 * PRs reviewed (with non-trivial review comments): 
-* Reported bugs and suggestions for other teams in the class: 
+* Reported bugs and suggestions for other teams in the class: T11-2 (TradeLog)
