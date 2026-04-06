@@ -608,8 +608,20 @@ to accomplish tasks faster than using a mouse in a GUI.
 
 ## Glossary
 
-* **CLI** - Command Line Interface. A text-based user interface used to interact with the software.
-* **Index** — The 1-based numerical position of a task as currently displayed in the list.
+| Term | Meaning |
+|------|---------|
+| **Workout Session** | A named training session that groups related exercises together (e.g. "Push Day", "Legs"). A workout session acts as a folder — you create it first, then add exercises into it. |
+| **Exercise** | A specific movement within a workout session (e.g. "Bench Press", "Deadlift"). Each exercise stores its own weight, sets, and reps. An exercise always belongs to exactly one workout session. |
+| **Log / Log Entry** | A timestamped record of your actual performance for an exercise during a particular session. Logs are saved to your history and can be reviewed later with `loglist`. |
+| **Remark** | A free-text note attached to a log entry (e.g. "Felt strong today", "Lower back tight"). |
+| **Template** | Your saved workout sessions and their exercises serve as reusable templates — the baseline plan you log against each time you train. |
+| **CLI** | Command Line Interface. A text-based user interface used to interact with the software. |
+| **Index** | The 1-based numerical position of a task as currently displayed in the list. |
+| **Flag** | A prefix marker in a command string (e.g. `w/`, `e/`, `wt/`, `s/`, `r/`) used by the Parser to extract specific values from the user's input. |
+| **Sticky Session** | A UX shortcut where the application remembers the last workout name used in a `log` command, so subsequent exercise logs do not require re-typing the `w/` flag. |
+| **Smart Overwriting** | The mechanism used by `HistoryStorage` to update an existing log entry in-place (rather than appending a duplicate) when the same exercise is re-logged on the same date. |
+
+> **In short:** GitSwole uses a two-level hierarchy — **Workout Sessions** contain **Exercises**. When you train, you **log** your performance against that template, building a chronological history you can review anytime.
 
 ---
 
