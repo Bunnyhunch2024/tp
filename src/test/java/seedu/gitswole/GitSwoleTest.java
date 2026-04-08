@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.gitswole.assets.WorkoutList;
 import seedu.gitswole.storage.Storage;
+import seedu.gitswole.ui.Ui;
 
 import java.io.File;
 import java.io.ByteArrayInputStream;
@@ -38,7 +39,6 @@ class GitSwoleTest {
         new File(TEST_STORAGE_PATH).delete();
         System.setOut(originalOut);
         System.setIn(originalIn);
-        resetStaticState();
     }
 
     // helpers
@@ -47,38 +47,19 @@ class GitSwoleTest {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
     }
 
-    private void resetStaticState() throws Exception {
-        Field workoutsField = GitSwole.class.getDeclaredField("workouts");
-        workoutsField.setAccessible(true);
-        workoutsField.set(null, new WorkoutList());
-
-        Field storageField = GitSwole.class.getDeclaredField("storage");
-        storageField.setAccessible(true);
-        storageField.set(null, new Storage(TEST_STORAGE_PATH));
-
-        // ui is re-created by the constructor
-        // null it here so any accidental call to run() without a prior constructor invocation fails fast.
-        Field uiField = GitSwole.class.getDeclaredField("ui");
-        uiField.setAccessible(true);
-        uiField.set(null, null);
-    }
-
     private void launch(String... inputLines) {
         feedInput(inputLines);
-        new GitSwole();
-        GitSwole.run();
+        new GitSwole().run();
     }
 
     // constructor
     @Test
-    @DisplayName("constructor initialises the static ui field (not null)")
+    @DisplayName("constructor initialises the ui field (not null)")
     void constructor_initialisesUi() throws Exception {
-        feedInput("exit");
-        new GitSwole();
-
+        GitSwole gs = new GitSwole();
         Field uiField = GitSwole.class.getDeclaredField("ui");
         uiField.setAccessible(true);
-        assertNotNull(uiField.get(null));
+        assertNotNull(uiField.get(gs));
     }
 
     // startup
@@ -182,6 +163,7 @@ class GitSwoleTest {
     @DisplayName("run() processes delete command end-to-end")
     void run_deleteWorkout_removedFromList() {
         launch("add w/push", "delete w/push", "list", "exit");
-        assertTrue(outContent.toString().contains("empty") || !outContent.toString().contains("push\n"));
+        // After deletion, the list should not contain the workout name formatted as [PUSH]
+        assertTrue(!outContent.toString().contains("[PUSH]"));
     }
 }
