@@ -1,56 +1,83 @@
 # Developer Guide
 ## Table of Contents
-1. [Setup Guide](#setup-guide)
-
-2. [Design](#design)
+1. [Acknowledgements](#Acknowledgements)
+2. [Setup Guide](#setup-guide)
+3. [Design](#design)
     - [UI Component](#ui-component)
     - [Parser Component](#parser-component)
     - [Command Component](#command-component)
     - [Storage Component](#storage-component)
-
-3. [Implementation](#implementation)
-    - [Ethan's Enhancement](#ethans-enhancement)
-        - [Delete Feature](#1-delete-feature)
-        - [Storage Feature](#2-storage-feature)
-    - [Praveen's Enhancement](#praveens-enhancement)
-        - [Tiered Listing Feature (`ListCommand`)](#1-tiered-listing-feature-listcommand)
-        - [Smart Workout Logging (`LogCommand`)](#2-smart-workout-logging-logcommand)
-        - [Persistent History Storage (`HistoryStorage`)](#3-persistent-history-storage-historystorage--historytxt)
-    - [ShuoJie's Enhancement](#shuojies-enhancement)
-        - [History Retrieval (`LogList`)](#1-history-retrieval-loglist)
-    - [Vetri's Enhancement](#vetris-enhancement)
-        - [Help Command (`HelpCommand`)](#1-help-command-helpcommand)
-        - [Exit Command (`ExitCommand`)](#2-exit-command-exitcommand)
-        - [Edit Workout and Exercise Feature (`EditCommand`)](#3-edit-workout-and-exercise-feature-editcommand)
-    - [Wan's Enhancement](#wans-enhancement)
-        - [Keyword-Based Find Feature (`FindCommand`)](#1-keyword-based-find-feature-findcommand)
-
-4. [Product Scope](#product-scope)
+4. [Implementation](#implementation)
+    - [Storage Feature](#storage-feature)
+    - [Delete Feature (`DeleteCommand`)](#delete-feature)
+    - [Edit Workout and Exercise Feature (`EditCommand`)](#edit-workout-and-exercise-feature-editcommand)
+    - [Keyword-Based Find Feature (`FindCommand`)](#keyword-based-find-feature-findcommand)
+    - [Tiered Listing Feature (`ListCommand`)](#tiered-listing-feature-listcommand)
+    - [Smart Workout Logging (`LogCommand`)](#smart-workout-logging-logcommand)
+    - [Persistent History Storage (`HistoryStorage`)](#persistent-history-storage-historystorage--historytxt)
+    - [History Retrieval (`LogList`)](#history-retrieval-loglist)
+    - [Help Command (`HelpCommand`)](#help-command-helpcommand)
+    - [Exit Command (`ExitCommand`)](#exit-command-exitcommand)
+5. [Product Scope](#product-scope)
     - [Target User Profile](#target-user-profile)
     - [Value Proposition](#value-proposition)
+6. [User Stories](#user-stories)
+7. [Non-Functional Requirements](#non-functional-requirements)
+8. [Glossary](#glossary)
+9. [Instructions for Manual Testing](#instructions-for-manual-testing)
 
-5. [User Stories](#user-stories)
+10. [Non-Functional Requirements](#non-functional-requirements)
 
-6. [Non-Functional Requirements](#non-functional-requirements)
+11. [Glossary](#glossary)
 
-7. [Glossary](#glossary)
+12. [Instructions for Manual Testing](#instructions-for-manual-testing)
+13. 
+## Acknowledgements
 
-8. [Instructions for Manual Testing](#instructions-for-manual-testing)
-
+* [JUnit 5](https://junit.org/junit5/) - Used for unit testing across all components.
+* [Checkstyle](https://checkstyle.sourceforge.io/) - Used to enforce coding standards and formatting.
+* [AddressBook-Level3](https://se-education.org/addressbook-level3/) - Project structure, N-tier architecture design, and specific `Parser` command-handling patterns were heavily inspired by and adapted from the se-edu initiative.
+* [TA ASCII Art Generator](https://patorjk.com/software/taag/) - Used to generate the GitSwole terminal startup logo.
+* [Baeldung: Java FileWriter](https://www.baeldung.com/java-write-to-file) - Adapted code snippets from this guide for our `HistoryStorage` smart-overwriting logic.
+* [StackOverflow - "Regex for parsing flags"](https://stackoverflow.com/questions/...) - Adapted the regex boundary detection logic used in `Parser.parseValue()`.
 ## Setup Guide
-### Steps
-1. Clone the repository to your local machine:
-   ```bash
+
+### Prerequisites
+* **Java 11** or above — verify with `java -version`
+* **Gradle 7.6+** — the project ships with the Gradle wrapper (`gradlew`), so a
+  separate Gradle installation is not required
+
+### Getting the Source Code
+1. Fork the repository on GitHub if you intend to contribute.
+2. Clone your fork to your local machine:
+```bash
    git clone https://github.com/AY2526S2-CS2113-W10-3/tp
-   ```
-2. Navigate into the project directory:
-   ```bash
+```
+3. Navigate into the project directory:
+```bash
    cd tp
-   ```
-3. Run the application using Gradle:
-   ```bash
-   ./gradlew run
-    ```
+```
+
+### Setting Up the IDE (IntelliJ IDEA — Recommended)
+1. Open IntelliJ IDEA and choose **Open**, then select the root `tp/` folder.
+2. If prompted, select **Import Gradle Project** and let IntelliJ resolve dependencies.
+3. Ensure the Project SDK is set to **Java 11**:
+   `File → Project Structure → Project → SDK`
+4. Enable annotation processing:
+   `Settings → Build, Execution, Deployment → Compiler → Annotation Processors → Enable`
+5. Install the **Checkstyle-IDEA** plugin and point it to `config/checkstyle/checkstyle.xml`
+   to get inline style warnings as you code:
+   `Settings → Tools → Checkstyle → Configuration File`
+
+### Verifying the Build
+Run the following from the project root to confirm everything compiles and all
+tests pass before making any changes:
+```bash
+./gradlew check        # runs Checkstyle + all JUnit tests
+./gradlew run          # launches the app
+```
+A successful setup will show `BUILD SUCCESSFUL` with no test failures.
+
 ## Design
 
 The **Architecture Diagram** below gives a high-level design overview of GitSwole.
@@ -66,10 +93,10 @@ Given below is a quick overview of the main components and how they interact wit
 - **At shut down:** When `Command.isExit()` returns `true`, the loop exits cleanly, and the application terminates.
 
 The bulk of the app's work is done by the following four components:
-- [**`UI`**](#ui-component): The user interface — responsible for reading raw user input and displaying all formatted output back to the terminal.
-- [**`Parser`**](#parser-component): The command interpreter — handles complex string processing and flag extraction (e.g., `w/`, `e/`) to translate raw user input into executable `Command` objects.
-- [**`Command`**](#command-component): The command executor — each subclass encapsulates the specific business logic for one operation (e.g., `AddCommand`, `DeleteCommand`).
-- [**`Storage`**](#storage-component): The data persistence layer — manages file I/O operations for `workouts.txt` (templates) and `history.txt` (session logs).
+- [**`UI`**](#ui-component): The user interface - responsible for reading raw user input and displaying all formatted output back to the terminal.
+- [**`Parser`**](#parser-component): The command interpreter - handles complex string processing and flag extraction (e.g., `w/`, `e/`) to translate raw user input into executable `Command` objects.
+- [**`Command`**](#command-component): The command executor - each subclass encapsulates the specific business logic for one operation (e.g., `AddCommand`, `DeleteCommand`).
+- [**`Storage`**](#storage-component): The data persistence layer - manages file I/O operations for `workouts.txt` (templates) and `history.txt` (session logs).
 
 **`Assets`** represents the in-memory data model, consisting of `WorkoutList`, `Workout`, and `Exercise`. **`Commons`** contains shared utility classes (e.g., `GitSwoleException`) used across all components.
 
@@ -107,7 +134,6 @@ It exposes the following key operations:
 <img src="diagrams/architecture/Ui/UiComponent.png" width="573" />
 
 ---
-
 ### Parser Component
 
 **API:** `Parser.java`
@@ -124,20 +150,9 @@ It exposes the following key operations:
 - `parseOptionalInt(String, String, int)` *(static)* - extracts an optional integer flag
   value, returning a default if the flag is absent or malformed.
 
-The following commands are currently recognised:
-
-| Keyword | Maps to |
-|---|---|
-| `add` | `AddCommand` |
-| `delete` | `DeleteCommand` |
-| `edit` | `EditCommand` |
-| `find` | `FindCommand` |
-| `list` | `ListCommand` |
-| `mark` / `unmark` | `MarkCommand` |
-| `log` | `LogCommand` |
-| `loglist` | `LogListCommand` |
-| `help` | `HelpCommand` |
-| `exit` | `ExitCommand` |
+`Parser` resolves each recognised keyword to its corresponding `Command` subclass - the
+full keyword-to-command mapping is documented in the [Command Component](#command-component)
+below.
 
 > **Note:** `parseValue` and `parseOptionalInt` are `public static` methods, allowing
 > `Command` subclasses to reuse the same flag-parsing logic directly without re-instantiating
@@ -159,18 +174,20 @@ public abstract void execute(WorkoutList workouts, Ui ui) throws GitSwoleExcepti
 ```
 
 Each concrete subclass encapsulates the full logic for exactly one user-facing operation.
-The subclasses are:
+`Parser` resolves user input keywords to these subclasses as follows:
 
-- `AddCommand` - adds a new `Workout` or `Exercise` to the `WorkoutList`.
-- `DeleteCommand` - removes a `Workout` or `Exercise` by index.
-- `EditCommand` - modifies the name of an existing `Workout` or `Exercise`.
-- `FindCommand` - searches for workouts by keyword.
-- `ListCommand` - lists workouts at summary, workout-specific, or full-detail scope.
-- `MarkCommand` - marks or unmarks a `Workout` as done.
-- `LogCommand` - initialises a workout logging session or logs an individual exercise stat.
-- `LogListCommand` - displays the full workout history from `HistoryStorage`.
-- `HelpCommand` - displays all available commands and their formats.
-- `ExitCommand` - sets `isExit = true` to signal the main loop to terminate.
+| Keyword | Command Subclass | Responsibility |
+|---|---|---|
+| `add` | `AddCommand` | Adds a new `Workout` or `Exercise` to the `WorkoutList` |
+| `delete` | [`DeleteCommand`](#delete-feature) | Removes a `Workout` or `Exercise` by index |
+| `edit` | [`EditCommand`](#edit-workout-and-exercise-feature-editcommand) | Modifies the name or fields of an existing `Workout` or `Exercise` |
+| `find` | [`FindCommand`](#keyword-based-find-feature-findcommand) | Searches for workouts by keyword |
+| `list` | [`ListCommand`](#tiered-listing-feature-listcommand) | Lists workouts at summary, workout-specific, or full-detail scope |
+| `mark` / `unmark` | `MarkCommand` | Marks or unmarks a `Workout` as done |
+| `log` | [`LogCommand`](#smart-workout-logging-logcommand) | Initialises a logging session or logs an individual exercise stat |
+| `loglist` | [`LogListCommand`](#history-retrieval-loglist) | Displays the full workout history from `HistoryStorage` |
+| `help` | [`HelpCommand`](#help-command-helpcommand) | Displays all available commands and their formats |
+| `exit` | [`ExitCommand`](#exit-command-exitcommand) | Sets `isExit = true` to signal the main loop to terminate |
 
 The `isExit()` method is defined in the base class and returns `false` for all commands
 except `ExitCommand`, which overrides it to return `true`.
@@ -193,56 +210,18 @@ pipe-delimited format:
 
 ## Implementation
 
-The design of GitSwole follows a modular architecture inspired by the N-tier pattern, specifically tailored for a 
-CLI-based CRUD application. The system is divided into four primary logic components: `UI`, `Parser`, `Command`, 
-and `Storage`. These components interact with a central `Assets` data model to perform operations. The application is 
-designed to be extensible, allowing new commands and storage formats to be added with minimal friction by extending the 
-base `Command` class and utilizing dedicated storage handlers.
+The design of GitSwole follows a modular architecture inspired by the N-tier pattern, specifically tailored for a
+CLI-based CRUD application.
 
-### Ethan's enhancement
-#### 1. Delete Feature
+The four primary components - `Ui`, `Parser`, `Command`, and `Storage` - described in the
+[Design section](#design) above work together to implement the features below. Each feature
+is owned by a dedicated `Command` subclass that is instantiated by `Parser`, executed by
+`GitSwole`, and backed by `Storage` where persistence is required. The sections below 
+document the implementation details, design considerations, and sequence diagrams for each feature.
 
-The delete mechanism is facilitated by the `DeleteCommand.java` class. It extends from the abstract class `Command` and overrides the `execute()` method, which throws the exception `GitSwoleException`, to execute the deletion of workouts/exercises.
+---
 
-**How it works:** It receives 2 types of commands: one that deletes the workout only, and one that deletes the workout and the exercise of that workout.
-
-- `delete w/WORKOUT` — removes the entire named workout session
-- `delete e/EXERCISE w/WORKOUT` — removes a specific exercise from that workout
-
-**Examples:**
-```
-delete e/bench press w/pushday
-delete w/pushday
-```
-
-#### Architecture and Component Level Design
-
-When the user types in a command like the one shown above, it goes through the following process:
-
-1. **Parser:** Reads the raw input (e.g. `delete e/bench press w/pushday`), extracts the command word `delete`, and returns a new `DeleteCommand(response)` with the full raw string passed as the argument. No index parsing occurs — the entire string is forwarded as-is.
-
-2. **DeleteCommand:** The main loop calls `DeleteCommand#execute()`, which inspects the raw string for the presence of `e/` and `w/` flags to determine which operation to perform.
-
-3. **WorkoutList:** The command delegates to either `WorkoutList#removeWorkout()` or `WorkoutList#removeExercise()`, both of which perform case-insensitive name matching to locate and remove the target entry.
-
-4. **Ui:** The result (success or not found) is reported back to the user via `Ui#showMessage()`.
-
-#### Design Considerations
-**Alternative 1 (Considered): Delete by list index**
-
-The user specifies the target by its position number in the list (e.g. `delete 1`).
-
-- **Pros:** Much faster typing, as you do not need to type in the flags, and if you know the index of the workout that you want to delete.
-- **Cons:** The user must first list the workouts in the list, then find their workout index, which might take an even longer time. Therefore, we decided to stick with the current implementation of using flags in our command.
-
-
-#### Sequence Diagram
-
-This diagram shows the sequence in which the delete command is entered.
-
-<img src="diagrams/commands/delete/deleteSD-Sequence_Diagram__DeleteCommand.png" width="950" />
-
-#### 2. Storage Feature
+### Storage Feature
 
 The `Storage` class saves and loads the data from `WorkoutList` through a plaintext file on the hardware memory. When the application is started and run, the previous data is immediately loaded into the application.
 
@@ -273,171 +252,51 @@ Each workout block consists of:
 
 ---
 
-### Praveen's enhancement
+### Delete Feature (`DeleteCommand`)
 
-This enhancement introduces a robust workout logging and history tracking system, along with a multi-tiered listing 
-mechanism. It is composed of the `ListCommand`, `LogCommand`, `LogListCommand`, `HistoryStorage` classes, and the 
-`history.txt` persistent file.
+The delete mechanism is facilitated by the `DeleteCommand.java` class. It extends from the abstract class `Command` and overrides the `execute()` method, which throws the exception `GitSwoleException`, to execute the deletion of workouts/exercises.
 
-#### 1. Tiered Listing Feature (`ListCommand`)
-The listing enhancement allows users to view their data at three different granularities without needing multiple, 
-fragmented commands.
+**How it works:** It receives 2 types of commands: one that deletes the workout only, and one that deletes the workout and the exercise of that workout.
 
-* **Implementation:**
-    `ListCommand` extends the base `Command` class. It uses string matching on the parsed user input to route execution 
-to one of three helper methods:
-    - `handleListSummary()`: Triggered by `list`. Iterates through `WorkoutList` to show names and completion status.
-    - `handleListWorkout()`: Triggered by `list w/`. Fetches a specific `Workout` and displays its nested `Exercise` list.
-    - `handleListAll()`: Triggered by `list all`. Performs a deep iteration across all workouts and their exercises.
+- `delete w/WORKOUT` - removes the entire named workout session
+- `delete e/EXERCISE w/WORKOUT` - removes a specific exercise from that workout
 
-* **Design Considerations:**
-    - **Why it is implemented this way:** Handling all list variations within a single `ListCommand` class centralizes 
-the read-only display logic. It prevents "class explosion" and adheres to the DRY principle by reusing UI rendering methods.
-    - **Alternatives considered:** Creating separate commands like `ListSummaryCommand` and `ListAllCommand`. This was 
-rejected as it would clutter the parser logic and make the codebase harder to maintain.
+**Examples:**
+```
+delete e/bench press w/pushday
+delete w/pushday
+```
 
-#### 2. Smart Workout Logging (`LogCommand`)
-The logging system allows users to record their real-time performance (weight, sets, reps) and persistent session data.
+#### Architecture and Component Level Design
 
-* **Implementation:**
-    - `LogCommand` manages active sessions. It supports a "sticky" session state where the application remembers the last workout logged (via `setActiveWorkoutName`), allowing users to log multiple exercises without re-typing the workout name.
+When the user types in a command like the one shown above, it goes through the following process:
 
-* **Design Considerations:**
-    - **Why it is implemented this way:** The "sticky session" was implemented to improve User Experience (UX) in a CLI environment, reducing the number of keystrokes required during a workout.
-    - **Alternatives considered:** Requiring the `w/` flag for every single exercise log. This was deemed too tedious for users who are actively training.
+1. **Parser:** Reads the raw input (e.g. `delete e/bench press w/pushday`), extracts the command word `delete`, and returns a new `DeleteCommand(response)` with the full raw string passed as the argument. No index parsing occurs - the entire string is forwarded as-is.
 
-#### 3. Persistent History Storage (`HistoryStorage` & `history.txt`)
-Unlike the primary `workouts.txt` which stores the current "template" or "routine", `history.txt` stores an 
-immutable (but updatable for corrections) log of every completed session.
+2. **DeleteCommand:** The main loop calls `DeleteCommand#execute()`, which inspects the raw string for the presence of `e/` and `w/` flags to determine which operation to perform.
 
-* **Implementation:**
-    `HistoryStorage` implements a "Smart Overwriting" mechanism. When a user logs an exercise:
-    1. It identifies the session block for the current date.
-    2. It searches for the specific exercise entry within that block.
-    3. If found, it updates the stats and remarks in-place instead of appending a new line.
-    4. If not found, it appends the new entry to the end of the today's session block.
+3. **WorkoutList:** The command delegates to either `WorkoutList#removeWorkout()` or `WorkoutList#removeExercise()`, both of which perform case-insensitive name matching to locate and remove the target entry.
 
-* **History File Format (`history.txt`):**
-    The file uses a human-readable format with date headers and dashed separators:
-    ```
-    [29-03-2026, 14:30] PUSH DAY workout
-    Bench Press       :   80kg |  3 sets | 10 reps
-      Remark: Felt heavy today
-    --------------------------------------------
-    ```
-
-* **Design Considerations:**
-    - **Why it is implemented this way:** Smart overwriting was chosen to maintain data integrity and file cleanliness. 
-If a user makes a typo and re-logs the same exercise, the previous entry is corrected rather than duplicated.
-    - **Alternatives considered:** Append-only logging. While easier to implement, it leads to "data bloat" and 
-makes it difficult for users to correct mistakes.
-
-#### Sequence Diagrams
-
-The following sequence diagram illustrates how the `ListCommand` determines the scope of the listing and interacts with the `WorkoutList` and `Ui` components:
-
-<img src="diagrams/commands/list/listSD.png" width="646" />
-
-This sequence diagram shows the execution flow of the `LogCommand`, highlighting the "sticky session" logic and the interaction with `HistoryStorage`:
-
-<img src="diagrams/commands/log/logSD.png" width="886" />
-
-The following diagram details the internal "Smart Overwriting" mechanism within `HistoryStorage`:
-
-<img src="diagrams/architecture/Storage/historystorageSD.png" width="600" />
-
----
-### ShuoJie's enhancement: History Retrieval (`loglist`)
-
-The `LogList` enhancement provides users with a dedicated way to view their past workout sessions chronologically. While the standard `list` command displays workout templates (routines), `loglist` retrieves actual performed data from the persistent history file.
-
-#### 1. History Retrieval (`LogList`)
-
-#### Implementation
-
-The `LogList` mechanism is centered around the `LogListCommand` class. It acts as the logic controller that bridges the `HistoryStorage` component and the `Ui` component.
-
-##### Implementation Details: LogList Filter Logic
-The `LogListCommand` utilizes a strategy-based approach to filter history. Depending on the flags detected in the user's raw input string, it routes the request to different specialized methods within `HistoryStorage`. This prevents the command class from becoming bloated with file-parsing logic.
-
-*   **Level 1 (Architecture):** The `LogListCommand` acts as a high-level controller. It requests a `List<String>` of formatted entries from the `Storage` layer and passes that list directly to the `UI` layer for rendering. This maintains a strict separation of concerns.
-*   **Level 2 (Component):** Inside the `execute()` method, the command performs flag detection:
-    *   If the `d/` flag is detected: It extracts the date string and calls `historyStorage.getEntriesByDate(date)`.
-    *   If the `w/` flag is detected: It extracts the workout name and calls `historyStorage.getEntriesByWorkout(name)`.
-    *   Otherwise: It defaults to `historyStorage.getAllEntries()` to show the complete history.
-
-##### Design Decision: Dependency Injection for Testing
-A key design choice was the implementation of an overloaded constructor:
-`LogListCommand(String response, HistoryStorage historyStorage)`.
-
-This allows for **Dependency Injection**. In the production environment, the app uses the default constructor which initializes a real file-linked `HistoryStorage`. During testing, the JUnit suite injects a `HistoryStorageStub`. This ensures that unit tests are:
-1.  **Isolated:** Tests do not fail if the actual `history.txt` file is missing or corrupted.
-2.  **Deterministic:** The test always receives the exact same mock data, making it reliable across different developer machines.
+4. **Ui:** The result (success or not found) is reported back to the user via `Ui#showMessage()`.
 
 #### Design Considerations
+**Alternative 1 (Considered): Delete by list index**
 
-**Aspect: Data Retrieval Strategy**
+The user specifies the target by its position number in the list (e.g. `delete 1`).
 
-*   **Alternative 1 (Current Choice): On-demand File Reading.**
-    *   **Pros:** Minimal memory footprint. The application does not need to store years of history in RAM; it only reads the file when the user explicitly asks for it.
-    *   **Cons:** Incurs a small File I/O overhead each time the command is run.
-    *   **Reason for Choosing:** Since `loglist` is a diagnostic command rather than a high-frequency entry command (like `add`), the trade-off of a few milliseconds of disk access for significantly lower RAM usage is optimal for a CLI tool.
+- **Pros:** Much faster typing, as you do not need to type in the flags, and if you know the index of the workout that you want to delete.
+- **Cons:** The user must first list the workouts in the list, then find their workout index, which might take an even longer time. Therefore, we decided to stick with the current implementation of using flags in our command.
 
 
 #### Sequence Diagram
 
-The diagram below shows how the components interact when a user requests to see their workout history.
+This diagram shows the sequence in which the delete command is entered.
 
-<img src="diagrams/commands/loglist/loglistSD.png" width="700" />
+<img src="diagrams/commands/delete/deleteSD-Sequence_Diagram__DeleteCommand.png" width="950" />
 
 ---
 
-### Vetri's Enhancement
-
-This enhancement introduces the help and exit commands, along with an in-place workout and exercise editing system.
-It is composed of the `HelpCommand`, `ExitCommand`, and `EditCommand` classes.
-
-#### 1. Help Command (`HelpCommand`)
-
-The help feature displays a formatted reference of all available commands and their usage syntax directly in the 
-terminal.
-
-* **Implementation:**
-  `HelpCommand` extends the base `Command` class. It stores all command descriptions in a 2D `String` array, where each
-  row contains a command's syntax, its corresponding description, and an example.
-* On `execute()`, it iterates through the array and renders each row through `Ui#showMessage()`.
-
-* **Design Considerations:**
-    - **Why it is implemented this way:** Using a 2D array loop instead of hardcoded individual print statements makes
-      it trivial to add or update command entries — only the array data needs to change, not the rendering logic.
-    - **Alternatives considered:** A series of individual `Ui#showMessage()` calls, one per command. This was rejected
-      as it scatters the command reference data across multiple lines and makes maintenance error-prone.
-
-**Sequence Diagram:**  
-<img src="diagrams/commands/help/HelpCommand.png" width="600"/>
-
-#### 2. Exit Command (`ExitCommand`)
-
-The exit feature cleanly terminates the application loop and displays a goodbye message.
-
-* **Implementation:**
-  `ExitCommand` extends the base `Command` class and overrides `isExit()` to return `true`. On `execute()`, it calls
-  `Ui#byeGreeting()` to display the farewell message. The main loop in `GitSwole` checks `Command#isExit()` after every
-  command execution and breaks out of the loop when `true` is returned, triggering a clean shutdown.
-
-* **Design Considerations:**
-    - **Why it is implemented this way:** Encoding the exit signal as an override of `isExit()` in the base `Command`
-      class keeps the main loop uniform, every iteration checks the same method regardless of which command ran,
-      with no special-casing needed for the exit path.
-    - **Alternatives considered:** Throwing a dedicated `ExitException` to break out of the loop within `run()`.
-      This was rejected because using exceptions for control flow is considered bad practice, as exceptions should
-      signal unexpected errors, not a normal user-initiated shutdown. Declaring `ExitCommand` as a subclass of
-      `Command` keeps the exit path uniform with every other command, requiring no special-casing in the main loop.
-
-**Sequence Diagram:**  
-<img src="diagrams/commands/exit/ExitCommand.png" width="600"/>
-
-#### 3. Edit Workout and Exercise Feature (`EditCommand`)
+### Edit Workout and Exercise Feature (`EditCommand`)
 
 The edit feature allows users to rename an existing workout or modify the details of
 a specific exercise within a workout. It is facilitated by `EditCommand`, which interacts
@@ -471,9 +330,9 @@ Output: Change Recorded! Edited Workout:
 `EditCommand` extends `Command` and routes execution to one of two private handlers based
 on the presence of the `e/` flag in the raw input string:
 
-- `handleEditWorkout(WorkoutList, Ui)` — triggered when only the `w/` flag is present.
+- `handleEditWorkout(WorkoutList, Ui)` - triggered when only the `w/` flag is present.
   Renames the target workout.
-- `handleEditExercise(WorkoutList, Ui)` — triggered when both `w/` and `e/` flags are
+- `handleEditExercise(WorkoutList, Ui)` - triggered when both `w/` and `e/` flags are
   present. Edits the fields of a specific exercise within the target workout.
 
 Given below is an example usage scenario for `edit w/Push Day e/Bench Press` and how
@@ -519,43 +378,43 @@ no changes were recorded.
       (e.g: `wn/push en/bench wt/100 s/3 r/10`)
 
 
-**Sequence Diagram:**
+**Sequence Diagram:**  
+**Overview:**  
+<img src="diagrams/commands/edit/EditCommand.png" width="300"/>
 
-<img src="diagrams/commands/edit/EditCommand.png" width="1047"/>
+**Edit Workout:**  
+<img src="diagrams/commands/edit/EditWorkoutCommand.png" width="700"/>
+
+**Edit Exercise:**  
+<img src="diagrams/commands/edit/EditExerciseCommand.png" width="900"/>
 
 ---
 
-### Wan's Enhancement
+### Keyword-Based Find Feature (`FindCommand`)
 
-This enhancement introduces the search capability, which allows users to quickly locate workouts and exercises
-within the application. It is composed of the `FindCommand` class.
-
-####  1. Keyword-Based Find Feature (`FindCommand`)
-
-The find mechanism allows users to search their data to two levels of extent — across all workouts, or within
+The find mechanism allows users to search their data to two levels of extent - across all workouts, or within
 a specific workout's exercise list.
 
-**Implementation:**  
-* `FindCommand` extends the base `Command` class and overrides `execute()`. It uses flag detection on the raw input 
-    string to route execution to one of two helper methods:
-
+**Implementation:**
+* `FindCommand` extends the base `Command` class and overrides `execute()`. It uses flag detection on the raw input
+  string to route execution to one of two helper methods:
 * `handleFindWorkout()`: Triggered by `find w/WORKOUT`. Scans all entries in `WorkoutList` via
-`WorkoutList#getWorkouts()` using case-insensitive keyword matching, then displays each match's name and
-exercise count.
+  `WorkoutList#getWorkouts()` using case-insensitive keyword matching, then displays each match's name and
+  exercise count.
 * `handleFindExercise()`: Triggered by `find e/EXERCISE w/WORKOUT`. First calls
-`WorkoutList#getWorkoutByName()` to pin down the target workout, then iterates its exercise list for matches,
-displaying name, weight, sets, and reps per result.
+  `WorkoutList#getWorkoutByName()` to pin down the target workout, then iterates its exercise list for matches,
+  displaying name, weight, sets, and reps per result.
 *   In both cases, results are surfaced through `Ui#showMessage()`. If no matches are found, a "Not Found" message
-is displayed.
+    is displayed.
 
 **Design Considerations:**
-    
+
 **Why it is implemented this way:** Centralising both search variants within a single `FindCommand` class
-      keeps the flag-routing logic cohesive and avoids complicating the command hierarchy. The two-level search
-      (workout vs. exercise) mirrors the natural hierarchy of the data model, making the feature easy to use.
+keeps the flag-routing logic cohesive and avoids complicating the command hierarchy. The two-level search
+(workout vs. exercise) mirrors the natural hierarchy of the data model, making the feature easy to use.
 
 **Alternatives considered:** Creating separate `FindWorkoutCommand` and `FindExerciseCommand` classes. This
-      was rejected as it would complicate the parser and duplicate the shared flag-parsing and result-display logic.
+was rejected as it would complicate the parser and duplicate the shared flag-parsing and result-display logic.
 
 **Sequence Diagram:**
 
@@ -563,6 +422,167 @@ The following sequence diagram illustrates how `FindCommand` determines the sear
 `WorkoutList` and `Ui`:
 
 <img src="diagrams/commands/find/FindCommand.png" width="700" />
+
+---
+
+### Tiered Listing Feature (`ListCommand`)
+The listing enhancement allows users to view their data at three different granularities without needing multiple,
+fragmented commands.
+
+* **Implementation:**
+  `ListCommand` extends the base `Command` class. It uses string matching on the parsed user input to route execution
+  to one of three helper methods:
+    - `handleListSummary()`: Triggered by `list`. Iterates through `WorkoutList` to show names and completion status.
+    - `handleListWorkout()`: Triggered by `list w/`. Fetches a specific `Workout` and displays its nested `Exercise` list.
+    - `handleListAll()`: Triggered by `list all`. Performs a deep iteration across all workouts and their exercises.
+
+* **Design Considerations:**
+    - **Why it is implemented this way:** Handling all list variations within a single `ListCommand` class centralizes
+      the read-only display logic. It prevents "class explosion" and adheres to the DRY principle by reusing UI rendering methods.
+    - **Alternatives considered:** Creating separate commands like `ListSummaryCommand` and `ListAllCommand`. This was
+      rejected as it would clutter the parser logic and make the codebase harder to maintain.
+
+#### Sequence Diagrams
+
+The following sequence diagram illustrates how the `ListCommand` determines the scope of the listing and interacts with the `WorkoutList` and `Ui` components:
+
+<img src="diagrams/commands/list/listSD.png" width="646" />
+
+---
+
+### Smart Workout Logging (`LogCommand`)
+The logging system allows users to record their real-time performance (weight, sets, reps) and persistent session data.
+
+* **Implementation:**
+    - `LogCommand` manages active sessions. It supports a "sticky" session state where the application remembers the last workout logged (via `setActiveWorkoutName`), allowing users to log multiple exercises without re-typing the workout name.
+
+* **Design Considerations:**
+    - **Why it is implemented this way:** The "sticky session" was implemented to improve User Experience (UX) in a CLI environment, reducing the number of keystrokes required during a workout.
+    - **Alternatives considered:** Requiring the `w/` flag for every single exercise log. This was deemed too tedious for users who are actively training.
+
+#### Sequence Diagrams
+This sequence diagram shows the execution flow of the `LogCommand`, highlighting the "sticky session" logic and the interaction with `HistoryStorage`:
+
+<img src="diagrams/commands/log/logSD.png" width="886" />
+
+---
+
+### Persistent History Storage (`HistoryStorage` & `history.txt`)
+Unlike the primary `workouts.txt` which stores the current "template" or "routine", `history.txt` stores an 
+immutable (but updatable for corrections) log of every completed session.
+
+* **Implementation:**
+    `HistoryStorage` implements a "Smart Overwriting" mechanism. When a user logs an exercise:
+    1. It identifies the session block for the current date.
+    2. It searches for the specific exercise entry within that block.
+    3. If found, it updates the stats and remarks in-place instead of appending a new line.
+    4. If not found, it appends the new entry to the end of the today's session block.
+
+* **History File Format (`history.txt`):**
+    The file uses a human-readable format with date headers and dashed separators:
+    ```
+    [29-03-2026, 14:30] PUSH DAY workout
+    Bench Press       :   80kg |  3 sets | 10 reps
+      Remark: Felt heavy today
+    --------------------------------------------
+    ```
+
+* **Design Considerations:**
+    - **Why it is implemented this way:** Smart overwriting was chosen to maintain data integrity and file cleanliness. 
+If a user makes a typo and re-logs the same exercise, the previous entry is corrected rather than duplicated.
+    - **Alternatives considered:** Append-only logging. While easier to implement, it leads to "data bloat" and 
+makes it difficult for users to correct mistakes.
+
+#### Sequence Diagrams
+
+The following diagram details the internal "Smart Overwriting" mechanism within `HistoryStorage`:
+
+<img src="diagrams/architecture/Storage/historystorageSD.png" width="600" />
+
+---
+
+### History Retrieval (`LogList`)
+
+#### Implementation
+
+The `LogList` mechanism is centered around the `LogListCommand` class. It acts as the logic controller that bridges the `HistoryStorage` component and the `Ui` component.
+
+##### Implementation Details: LogList Filter Logic
+The `LogListCommand` utilizes a strategy-based approach to filter history. Depending on the flags detected in the user's raw input string, it routes the request to different specialized methods within `HistoryStorage`. This prevents the command class from becoming bloated with file-parsing logic.
+
+*   **Level 1 (Architecture):** The `LogListCommand` acts as a high-level controller. It requests a `List<String>` of formatted entries from the `Storage` layer and passes that list directly to the `UI` layer for rendering. This maintains a strict separation of concerns.
+*   **Level 2 (Component):** Inside the `execute()` method, the command performs flag detection:
+    *   If the `d/` flag is detected: It extracts the date string and calls `historyStorage.getEntriesByDate(date)`.
+    *   If the `w/` flag is detected: It extracts the workout name and calls `historyStorage.getEntriesByWorkout(name)`.
+    *   Otherwise: It defaults to `historyStorage.getAllEntries()` to show the complete history.
+
+##### Design Decision: Dependency Injection for Testing
+A key design choice was the implementation of an overloaded constructor:
+`LogListCommand(String response, HistoryStorage historyStorage)`.
+
+This allows for **Dependency Injection**. In the production environment, the app uses the default constructor which initializes a real file-linked `HistoryStorage`. During testing, the JUnit suite injects a `HistoryStorageStub`. This ensures that unit tests are:
+1.  **Isolated:** Tests do not fail if the actual `history.txt` file is missing or corrupted.
+2.  **Deterministic:** The test always receives the exact same mock data, making it reliable across different developer machines.
+
+#### Design Considerations
+
+**Aspect: Data Retrieval Strategy**
+
+*   **Alternative 1 (Current Choice): On-demand File Reading.**
+    *   **Pros:** Minimal memory footprint. The application does not need to store years of history in RAM; it only reads the file when the user explicitly asks for it.
+    *   **Cons:** Incurs a small File I/O overhead each time the command is run.
+    *   **Reason for Choosing:** Since `loglist` is a diagnostic command rather than a high-frequency entry command (like `add`), the trade-off of a few milliseconds of disk access for significantly lower RAM usage is optimal for a CLI tool.
+
+
+#### Sequence Diagram
+
+The diagram below shows how the components interact when a user requests to see their workout history.
+
+<img src="diagrams/commands/loglist/loglistSD.png" width="681" />
+
+---
+
+### Help Command (`HelpCommand`)
+
+The help feature displays a formatted reference of all available commands and their usage syntax directly in the 
+terminal.
+
+* **Implementation:**
+  `HelpCommand` extends the base `Command` class. It stores all command descriptions in a 2D `String` array, where each
+  row contains a command's syntax, its corresponding description, and an example.
+* On `execute()`, it iterates through the array and renders each row through `Ui#showMessage()`.
+
+* **Design Considerations:**
+    - **Why it is implemented this way:** Using a 2D array loop instead of hardcoded individual print statements makes
+      it trivial to add or update command entries - only the array data needs to change, not the rendering logic.
+    - **Alternatives considered:** A series of individual `Ui#showMessage()` calls, one per command. This was rejected
+      as it scatters the command reference data across multiple lines and makes maintenance error-prone.
+
+**Sequence Diagram:**  
+<img src="diagrams/commands/help/HelpCommand.png" width="600"/>
+
+---
+
+### Exit Command (`ExitCommand`)
+
+The exit feature cleanly terminates the application loop and displays a goodbye message.
+
+* **Implementation:**
+  `ExitCommand` extends the base `Command` class and overrides `isExit()` to return `true`. On `execute()`, it calls
+  `Ui#byeGreeting()` to display the farewell message. The main loop in `GitSwole` checks `Command#isExit()` after every
+  command execution and breaks out of the loop when `true` is returned, triggering a clean shutdown.
+
+* **Design Considerations:**
+    - **Why it is implemented this way:** Encoding the exit signal as an override of `isExit()` in the base `Command`
+      class keeps the main loop uniform, every iteration checks the same method regardless of which command ran,
+      with no special-casing needed for the exit path.
+    - **Alternatives considered:** Throwing a dedicated `ExitException` to break out of the loop within `run()`.
+      This was rejected because using exceptions for control flow is considered bad practice, as exceptions should
+      signal unexpected errors, not a normal user-initiated shutdown. Declaring `ExitCommand` as a subclass of
+      `Command` keeps the exit path uniform with every other command, requiring no special-casing in the main loop.
+
+**Sequence Diagram:**  
+<img src="diagrams/commands/exit/ExitCommand.png" width="600"/>
 
 ---
 
@@ -577,23 +597,27 @@ The following sequence diagram illustrates how `FindCommand` determines the sear
 
 ### Value Proposition
 
-GitSwole enables fitness-focused CLI users to manage, log, and track workouts entirely from the terminal — faster and with less friction than any GUI-based alternative.  
+GitSwole enables fitness-focused CLI users to manage, log, and track workouts entirely from the terminal - faster and with less friction than any GUI-based alternative.  
 
 ---
 
 ## User Stories
 
-| Version | As a ...          | I want to ...                                                                             | So that I can ...                                                              |
-|---------|-------------------|-------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| v1.0    | new user          | see all available commands and their usage syntax                                         | quickly learn how to use the application without referring to external docs    |
-| v1.0    | gym-goer          | add workouts and exercises with their weight, sets, and reps                              | build and keep track of my training routine                                    |
-| v2.0    | methodical user   | edit the name or details of an existing workout or exercise                               | correct mistakes or update my training plan without deleting and re-adding     |
-| v2.0    | committed fitspo  | view all my past logged workout sessions in a single command                              | identify trends or gaps in my routine and plan my next workout better          |
-| v2.0    | reflective gym-goer | log remarks for each exercise during a session                                          | remember how each session felt and track qualitative progress over time        |
+| Version | As a ...                                                    | I want to ...                                                                      | So that I can ...                                                                    |
+|---------|-------------------------------------------------------------|------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| v1.0    | new user                                                    | see all available commands and their usage syntax                                  | quickly learn how to use the application without referring to external docs          |
+| v1.0    | gym-goer planning my first workout                          | add workouts and exercises with their weight, sets, and reps                       | build and keep track of my training routine, so that I would have a plan when I go to the gym |
+| v1.0    | user who just finished their gym session                    | quickly log my workout with a simple command                                       | record my progress without spending so much time typing                              |
+| v1.0    | user who wants to seeriously use the app to manage workouts | clear sample or preloaded data witih one command                                   | start afresh with the workouts that I want to use                                    |
+| v1.0    | first time user who is confused about how to use the app    | have a list of the commands I can type into the CLI                                | get started quickly without reading lengthy documentation                            |
+| v2.0    | methodical user                                             | edit the name or details of an existing workout or exercise                        | correct mistakes or update my training plan without deleting and re-adding           |
+| v2.0    | neat user who wants to keep track of completed workouts     | mark the workout and exercise as done                                              | so that i can visually confirm my progress                                           |
+| v2.0    | committed fitspo                                            | view all my past logged workout sessions in a single command                       | identify trends or gaps in my routine and plan my next workout better                |
+| v2.0    | reflective gym-goer                                         | log remarks for each exercise during a session                                     | remember how each session felt and track qualitative progress over time              |
+| v2.0    | busy student                                                | see a summary of total workout duration and total volume after finishing a session | I can feel productive before heading back to study                                   |
 
 
 ---
-
 
 ## Non-Functional Requirements
 
@@ -608,8 +632,20 @@ to accomplish tasks faster than using a mouse in a GUI.
 
 ## Glossary
 
-* **CLI** - Command Line Interface. A text-based user interface used to interact with the software.
-* **Index** — The 1-based numerical position of a task as currently displayed in the list.
+| Term | Meaning |
+|------|---------|
+| **Workout Session** | A named training session that groups related exercises together (e.g. "Push Day", "Legs"). A workout session acts as a folder — you create it first, then add exercises into it. |
+| **Exercise** | A specific movement within a workout session (e.g. "Bench Press", "Deadlift"). Each exercise stores its own weight, sets, and reps. An exercise always belongs to exactly one workout session. |
+| **Log / Log Entry** | A timestamped record of your actual performance for an exercise during a particular session. Logs are saved to your history and can be reviewed later with `loglist`. |
+| **Remark** | A free-text note attached to a log entry (e.g. "Felt strong today", "Lower back tight"). |
+| **Template** | Your saved workout sessions and their exercises serve as reusable templates — the baseline plan you log against each time you train. |
+| **CLI** | Command Line Interface. A text-based user interface used to interact with the software. |
+| **Index** | The 1-based numerical position of a task as currently displayed in the list. |
+| **Flag** | A prefix marker in a command string (e.g. `w/`, `e/`, `wt/`, `s/`, `r/`) used by the Parser to extract specific values from the user's input. |
+| **Sticky Session** | A UX shortcut where the application remembers the last workout name used in a `log` command, so subsequent exercise logs do not require re-typing the `w/` flag. |
+| **Smart Overwriting** | The mechanism used by `HistoryStorage` to update an existing log entry in-place (rather than appending a duplicate) when the same exercise is re-logged on the same date. |
+
+> **In short:** GitSwole uses a two-level hierarchy — **Workout Sessions** contain **Exercises**. When you train, you **log** your performance against that template, building a chronological history you can review anytime.
 
 ---
 

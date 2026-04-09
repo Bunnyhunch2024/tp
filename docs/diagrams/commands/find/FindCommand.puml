@@ -1,69 +1,115 @@
 @startuml
 title Sequence Diagram: FindCommand
 
-participant Caller
-participant ":FindCommand" as FindCommand
-participant ":Parser" as Parser
+participant "Caller" as Caller
+participant ":FindCommand" as Command
 participant ":WorkoutList" as WorkoutList
+participant ":Workout" as Workout
+participant ":Exercise" as Exercise
 participant ":Ui" as Ui
+participant "Parser" as Parser
 
-Caller -> FindCommand : execute(workouts, ui)
+Caller -> Command : execute(workouts, ui)
+activate Command
 
-alt [arguments.contains("e/")]
-    FindCommand -> FindCommand : handleFindExercise(workouts, ui)
+alt arguments.contains("e/")
+    Command -> Command : handleFindExercise(workouts, ui)
+    activate Command
 
-    FindCommand -> Parser : parseValue(arguments, "e/")
-    Parser --> FindCommand : exerciseKeyword
+    Command -> Parser : parseValue(arguments, "e/")
+    Parser --> Command : exerciseKeyword
+    Command -> Parser : parseValue(arguments, "w/")
+    Parser --> Command : workoutName
 
-    FindCommand -> Parser : parseValue(arguments, "w/")
-    Parser --> FindCommand : workoutName
+    alt exerciseKeyword or workoutName missing
+        Command -> Command : throw GitSwoleException(INCOMPLETE_COMMAND)
+    end
 
-    alt [missing e/ or w/ value]
-        FindCommand -> FindCommand : throw GitSwoleException\n(INCOMPLETE_COMMAND,\n"find e/EXERCISE w/WORKOUT")
-    else [valid keywords]
-        FindCommand -> WorkoutList : getWorkoutByName(workoutName)
-        WorkoutList --> FindCommand : targetWorkout
+    Command -> WorkoutList : getWorkoutByName(workoutName)
+    activate WorkoutList
+    WorkoutList --> Command : targetWorkout
+    deactivate WorkoutList
 
-        alt [targetWorkout == null]
-            FindCommand -> FindCommand : throw GitSwoleException\n(IDX_OUTOFBOUNDS, workoutName)
-        else [workout found]
-            loop for each exercise in targetWorkout.getExerciseList()
-                alt [exercise name contains exerciseKeyword]
-                    FindCommand -> Ui : showMessage("name | Weight: Xkg | Sets: X | Reps: X")
-                end
-            end
+    alt targetWorkout == null
+        Command -> Command : throw GitSwoleException(IDX_OUTOFBOUNDS)
+    end
 
-            alt [not found]
-                FindCommand -> Ui : showMessage("Exercise Not Found :(")
-            end
+    Command -> Workout : getExerciseList()
+    activate Workout
+    Workout --> Command : exercises
+    deactivate Workout
 
-            FindCommand -> Ui : showLine()
+    loop for each exercise in exercises
+        Command -> Exercise : getExerciseName()
+        activate Exercise
+        Exercise --> Command : exerciseName
+        deactivate Exercise
+
+        alt exercise name contains exerciseKeyword
+            Command -> Exercise : getWeight()
+            activate Exercise
+            Exercise --> Command : weight
+            deactivate Exercise
+            Command -> Exercise : getSets()
+            activate Exercise
+            Exercise --> Command : sets
+            deactivate Exercise
+            Command -> Exercise : getReps()
+            activate Exercise
+            Exercise --> Command : reps
+            deactivate Exercise
+            Command -> Ui : showMessage("name | Weight | Sets | Reps")
         end
     end
 
-else [no "e/" → handleFindWorkout]
-    FindCommand -> FindCommand : handleFindWorkout(workouts, ui)
-
-    FindCommand -> Parser : parseValue(arguments, "w/")
-    Parser --> FindCommand : keyword
-
-    alt [keyword is null or empty]
-        FindCommand -> FindCommand : throw GitSwoleException\n(INCOMPLETE_COMMAND, "find w/WORKOUT")
-    else [valid keyword]
-        loop for each workout in workouts.getWorkouts()
-            alt [workout name contains keyword]
-                FindCommand -> Ui : showMessage("workoutName | Exercises: X")
-            end
-        end
-
-        alt [not found]
-            FindCommand -> Ui : showLine()
-            FindCommand -> Ui : showMessage("Workout Not Found :(")
-        end
-
-        FindCommand -> Ui : showLine()
+    alt !found
+        Command -> Ui : showMessage("Exercise Not Found :(")
     end
+
+    Command -> Ui : showLine()
+    deactivate Command
+
+else find workout (find w/...)
+    Command -> Command : handleFindWorkout(workouts, ui)
+    activate Command
+
+    Command -> Parser : parseValue(arguments, "w/")
+    Parser --> Command : keyword
+
+    alt keyword missing
+        Command -> Command : throw GitSwoleException(INCOMPLETE_COMMAND)
+    end
+
+    Command -> WorkoutList : getWorkouts()
+    activate WorkoutList
+    WorkoutList --> Command : workoutsList
+    deactivate WorkoutList
+
+    loop for each workout in workoutsList
+        Command -> Workout : getWorkoutName()
+        activate Workout
+        Workout --> Command : workoutName
+        deactivate Workout
+
+        alt workout name contains keyword
+            Command -> Workout : getExerciseList()
+            activate Workout
+            Workout --> Command : exerciseList
+            deactivate Workout
+            Command -> Ui : showMessage("name | Exercises: count")
+        end
+    end
+
+    alt !found
+        Command -> Ui : showLine()
+        Command -> Ui : showMessage("Workout Not Found :(")
+    end
+
+    Command -> Ui : showLine()
+    deactivate Command
 end
 
-FindCommand --> Caller
+Command --> Caller
+deactivate Command
+
 @enduml

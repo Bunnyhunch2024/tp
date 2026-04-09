@@ -1,0 +1,107 @@
+@startuml
+title Sequence Diagram: EditCommand (Exercise)
+
+participant ":EditCommand" as EC
+participant ":Parser" as P
+participant ":WorkoutList" as WL
+participant "workoutToEdit:Workout" as W
+participant "exerciseToEdit:Exercise" as E
+
+[-> EC : handleEditExercise(workouts, ui)
+activate EC
+
+EC -> P : parseValue(response, "w/")
+activate P
+P --> EC : workoutToEditString
+deactivate P
+
+EC -> P : parseValue(response, "e/")
+activate P
+P --> EC : exerciseToEditString
+deactivate P
+
+EC -> WL : getWorkoutByName(workoutToEditString)
+activate WL
+WL --> EC : workoutToEdit
+deactivate WL
+
+EC -> W : getExerciseByName(exerciseToEditString)
+activate W
+W --> EC : exerciseToEdit
+deactivate W
+
+EC -> EC : printCurrentExercise(ui, workoutToEditString, exerciseToEdit)
+activate EC
+deactivate EC
+
+EC -> EC : applyExerciseEdits(editLine, workoutToEdit, exerciseToEdit)
+activate EC
+
+EC -> P : parseValue(editLine, "wn/")
+activate P
+P --> EC : wn
+deactivate P
+
+EC -> P : parseValue(editLine, "en/")
+activate P
+P --> EC : en
+deactivate P
+
+EC -> P : parseValue(editLine, "wt/")
+activate P
+P --> EC : wt
+deactivate P
+
+EC -> P : parseValue(editLine, "s/")
+activate P
+P --> EC : s
+deactivate P
+
+EC -> P : parseValue(editLine, "r/")
+activate P
+P --> EC : r
+deactivate P
+
+opt wn is non-empty
+    EC -> W : setWorkoutName(wn)
+    activate W
+    W --> EC
+    deactivate W
+end
+
+opt en is non-empty
+    EC -> E : setExerciseName(en)
+    activate E
+    E --> EC
+    deactivate E
+end
+
+opt wt parses to positive int
+    EC -> E : setWeight(wt)
+    activate E
+    E --> EC
+    deactivate E
+end
+
+opt s parses to positive int
+    EC -> E : setSets(s)
+    activate E
+    E --> EC
+    deactivate E
+end
+
+opt r parses to positive int
+    EC -> E : setReps(r)
+    activate E
+    E --> EC
+    deactivate E
+end
+
+deactivate EC
+
+EC -> EC : printUpdatedWorkout(ui, workoutToEdit)
+activate EC
+deactivate EC
+
+deactivate EC
+@enduml

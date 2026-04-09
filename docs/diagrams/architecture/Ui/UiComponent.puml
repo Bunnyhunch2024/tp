@@ -9,6 +9,7 @@ class Ui {
     + Ui(in : InputStream)
     + readCommand() : String
     + helloGreeting(workouts : WorkoutList) : void
+    + byeGreeting() : void
     + showMessage(message : String) : void
     + showError(message : String) : void
     + printWorkouts(workouts : ArrayList) : void

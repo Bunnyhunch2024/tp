@@ -1,0 +1,48 @@
+@startuml
+title Sequence Diagram: EditCommand (Workout)
+
+participant ":EditCommand" as EC
+participant ":Parser" as P
+participant ":WorkoutList" as WL
+participant "workoutToEdit:Workout" as W
+
+[-> EC : handleEditWorkout(workouts, ui)
+activate EC
+
+EC -> P : parseValue(response, "w/")
+activate P
+P --> EC : workoutToEditString
+deactivate P
+
+EC -> WL : getWorkoutByName(workoutToEditString)
+activate WL
+WL --> EC : workoutToEdit
+deactivate WL
+
+EC -> EC : printCurrentWorkout(ui, workoutToEditString)
+activate EC
+deactivate EC
+
+EC -> EC : applyWorkoutEdits(editLine, workoutToEdit)
+activate EC
+
+EC -> P : parseValue(editLine, "wn/")
+activate P
+P --> EC : wn
+deactivate P
+
+opt wn is non-empty
+    EC -> W : setWorkoutName(wn)
+    activate W
+    W --> EC
+    deactivate W
+end
+
+deactivate EC
+
+EC -> EC : printUpdatedWorkout(ui, workoutToEdit)
+activate EC
+deactivate EC
+
+deactivate EC
+@enduml
