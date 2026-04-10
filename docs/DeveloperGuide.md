@@ -39,9 +39,9 @@
 ## Setup Guide
 
 ### Prerequisites
-* **JDK 17** (use the exact version) — verify with `java -version`
-* **IntelliJ IDEA** (update to the most recent version)
-* **Gradle** — the project ships with the Gradle wrapper (`gradlew`), so a
+* **JDK 17** - verify with `java -version`
+* **IntelliJ IDEA**
+* **Gradle** - the project ships with the Gradle wrapper (`gradlew`), so a
   separate Gradle installation is not required
 
 ### Getting the Source Code
