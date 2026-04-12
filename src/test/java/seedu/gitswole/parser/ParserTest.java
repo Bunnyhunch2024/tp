@@ -251,5 +251,21 @@ class ParserTest {
     void parseValue_multiWordValue() {
         assertEquals("bench press", Parser.parseValue("add e/bench press wt/60", "e/"));
     }
+
+    @Test
+    @DisplayName("parseValue handles remark/ flag correctly")
+    void parseValue_withRemark() {
+        String input = "log e/Bench Press w/Push Day remark/Lightweight babyyy";
+        assertEquals("Push Day", Parser.parseValue(input, "w/"));
+        assertEquals("Bench Press", Parser.parseValue(input, "e/"));
+    }
+
+    @Test
+    @DisplayName("parseValue handles out-of-order flags and remark/ correctly")
+    void parseValue_outOfOrderWithRemark() {
+        String input = "log remark/Lightweight babyyy w/Push Day e/Bench Press";
+        assertEquals("Push Day", Parser.parseValue(input, "w/"));
+        assertEquals("Bench Press", Parser.parseValue(input, "e/"));
+    }
 }
 //@@author

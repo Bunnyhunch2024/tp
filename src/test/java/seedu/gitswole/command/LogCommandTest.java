@@ -121,11 +121,24 @@ class LogCommandTest {
             unknownWorkout.execute(workouts, ui));
         assertEquals(GitSwoleException.ErrorType.NOT_FOUND, ex1.getType());
 
-        // Case 2: Unknown Exercise in valid workout
+        // Case 2: Unknown Exercise in valid workout (not found anywhere)
         LogCommand unknownExercise = new LogCommand("log e/squats w/push", historyStub);
         GitSwoleException ex2 = assertThrows(GitSwoleException.class, () -> 
             unknownExercise.execute(workouts, ui));
         assertEquals(GitSwoleException.ErrorType.NOT_FOUND, ex2.getType());
+        assertEquals("'squats' not found. Please check your spelling.", ex2.getMessage());
+
+        // Case 3: Unknown Exercise in valid workout (found in another workout)
+        Workout pull = new Workout("pull");
+        pull.addExercise(new Exercise("deadlift", 0, 0, 0));
+        workouts.addWorkout(pull);
+
+        LogCommand wrongWorkoutExercise = new LogCommand("log e/deadlift w/push", historyStub);
+        GitSwoleException ex3 = assertThrows(GitSwoleException.class, () -> 
+            wrongWorkoutExercise.execute(workouts, ui));
+        
+        assertEquals(GitSwoleException.ErrorType.DEFAULT, ex3.getType());
+        assertEquals("\"deadlift\" not found in \"push\". Did you mean to log it under \"pull\" ?", ex3.getMessage());
     }
 
     @Test

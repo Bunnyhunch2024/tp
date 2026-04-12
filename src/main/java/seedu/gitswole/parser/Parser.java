@@ -179,23 +179,27 @@ public class Parser {
             return null;
         }
 
-        // 2. Find the next flag, but do not scan past remark/
+        // 2. Find where the value ends
+        // Default to end of string
         int end = input.length();
 
         // Find where remark/ starts (if it exists)
         int remarkIdx = input.indexOf(" remark/");
         if (remarkIdx == -1) {
-            remarkIdx = input.startsWith("remark/") ? 0 : input.length();
+            remarkIdx = input.startsWith("remark/") ? 0 : -1;
         }
 
-        // Limit search to before remark/
-        int searchEnd = Math.min(remarkIdx, input.length());
+        // If remark/ is present and after start, it's a potential end point
+        if (remarkIdx != -1 && remarkIdx > start) {
+            end = remarkIdx;
+        }
 
-        // Only search within the allowed region
+        // Find the next flag after start
         Matcher m = Pattern.compile(" [a-zA-Z]+/")
-                .matcher(input.substring(0, searchEnd));
+                .matcher(input);
 
-        if (m.find(start)) {
+        // If another flag is found BEFORE the current end, that's our real end
+        if (m.find(start) && m.start() < end) {
             end = m.start();
         }
 

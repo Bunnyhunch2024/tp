@@ -419,27 +419,10 @@ Output: Change Recorded! Edited Workout:
 
 > **Note:** Pressing Enter without typing anything at the prompt will be regarded as no changes.
 
-### Feature 16: Remarks
+### Feature 16: Log Workout Session
 
-**Purpose:** Adds comments and remarks to a workout session.
-
-**Format:**
-```
-log e/EXERCISE_NAME [w/WORKOUT_NAME] remark/REMARK
-```
-
-**Example:**
-```
-Input:  log e/Bench Press w/Push Day remark/Lightweight babyyy
-Output: Stats updated for Bench Press in Push Day!
-        Remark added: Lightweight babyyy
-```
-
-> **Note:** Remarks are saved to `history.txt` and displayed when you run `loglist`.
-
-### Feature 17: Log Workout Session
-
-**Purpose:** Starts or resumes a logging session for today. This command identifies the workout you are currently training and lists its exercises.
+**Purpose:** Starts or resumes a logging session for today. This command identifies the workout you are currently 
+training and lists its exercises.
 
 **Format:**
 ```
@@ -456,9 +439,10 @@ Output: Session started for Push Day! Let's get those gains.
 
 ---
 
-### Feature 18: Log Exercise Stats
+### Feature 17: Log Exercise Stats
 
-**Purpose:** Records your actual performance (weight, sets, reps) and an optional remark for a specific exercise. GitSwole uses "Smart Overwriting" to ensure your history remains clean.
+**Purpose:** Records your actual performance (weight, sets, reps) and an optional remark for a specific exercise. 
+GitSwole uses "Smart Overwriting" to ensure your history remains clean.
 
 **Format:**
 ```
@@ -476,6 +460,25 @@ Output: Stats updated for Bench Press in Push Day!
 ```
 
 ---
+
+### Feature 18: Remarks
+
+**Purpose:** Adds comments and remarks to a workout session.
+
+**Format:**
+```
+log e/EXERCISE_NAME [w/WORKOUT_NAME] remark/REMARK
+```
+* If `w/` is omitted, the most recent active session name is used (Sticky Session).
+
+**Example:**
+```
+Input:  log e/Bench Press w/Push Day remark/Lightweight babyyy
+Output: Stats updated for Bench Press in Push Day!
+        Remark added: Lightweight babyyy
+```
+
+> **Note:** Remarks are saved to `history.txt` and displayed when you run `loglist`.
 
 ### Feature 19: History Storage
 

@@ -157,6 +157,14 @@ public class LogCommand extends Command {
         if (exercise == null) {
             LOGGER.log(Level.INFO, "LogExercise failed: Exercise '{0}' not found in '{1}'.", 
                 new Object[]{exerciseName, workoutName});
+
+            Workout otherWorkout = workouts.getWorkoutByExerciseName(exerciseName);
+            if (otherWorkout != null) {
+                String helpMsg = "\"" + exerciseName + "\" not found in \"" + workoutName + "\". " +
+                        "Did you mean to log it under \"" + otherWorkout.getWorkoutName() + "\" ?";
+                throw new GitSwoleException(GitSwoleException.ErrorType.DEFAULT, helpMsg);
+            }
+
             throw new GitSwoleException(GitSwoleException.ErrorType.NOT_FOUND, exerciseName);
         }
 
