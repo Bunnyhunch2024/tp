@@ -56,8 +56,7 @@ public class Ui {
      */
     public String readCommand() {
         try {
-            String response = scanner.nextLine();
-            return response;
+            return scanner.nextLine();
         } catch (NoSuchElementException e) {
             showMessage("Ouch. Why bro? Please exit through the \"exit\" command next time!");
             return "exit";

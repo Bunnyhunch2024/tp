@@ -164,7 +164,8 @@ public class EditCommand extends Command{
      * @param workoutToEdit  The {@link Workout} whose name may be updated via {@code wn/}.
      * @param exerciseToEdit The {@link Exercise} whose fields may be updated.
      */
-    private void applyExerciseEdits(String editLine, Workout workoutToEdit, Exercise exerciseToEdit)
+    private void applyExerciseEdits(String editLine, Workout workoutToEdit, Exercise exerciseToEdit, Ui ui,
+                                    WorkoutList workouts, Workout workout)
             throws GitSwoleException {
         if (editLine == null || editLine.isBlank()) {
             return;
@@ -186,7 +187,13 @@ public class EditCommand extends Command{
             exerciseToEdit.setExerciseName(en);
             hasChanged = true;
         }
-
+        if (wt != null && !wt.isEmpty()) {
+            int wtInt = validInput(wt, ui);
+            if (wtInt >= 0) {
+                exerciseToEdit.setWeight(wtInt);
+                hasChanged = true;
+            }
+        }
         if (s != null && !s.isEmpty()) {
             int sInt = validInput(s, ui);
             if (sInt >= 0) {
@@ -236,7 +243,8 @@ public class EditCommand extends Command{
      *                      If {@code null} or blank, no changes are applied.
      * @param workoutToEdit The {@link Workout} whose name may be updated via {@code wn/}.
      */
-    private void applyWorkoutEdits(String editLine, Workout workoutToEdit) throws GitSwoleException {
+    private void applyWorkoutEdits(String editLine, Workout workoutToEdit, Ui ui, WorkoutList workouts)
+                                    throws GitSwoleException {
         if (editLine == null || editLine.isBlank()) {
             return;
         }
