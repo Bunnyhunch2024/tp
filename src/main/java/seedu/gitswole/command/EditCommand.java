@@ -164,8 +164,8 @@ public class EditCommand extends Command{
      * @param workoutToEdit  The {@link Workout} whose name may be updated via {@code wn/}.
      * @param exerciseToEdit The {@link Exercise} whose fields may be updated.
      */
-    private void applyExerciseEdits(String editLine, Workout workoutToEdit, Exercise exerciseToEdit, Ui ui,
-                                    WorkoutList workouts, Workout workout) {
+    private void applyExerciseEdits(String editLine, Workout workoutToEdit, Exercise exerciseToEdit)
+            throws GitSwoleException {
         if (editLine == null || editLine.isBlank()) {
             return;
         }
@@ -177,27 +177,14 @@ public class EditCommand extends Command{
         String r  = Parser.parseValue(editLine, "r/");
 
         if (wn != null && !wn.isEmpty()) {
-            if (workouts.getWorkoutByName(wn) != null) {
-                ui.showMessage("A workout named '" + wn + "' already exists!");
-            } else {
-                workoutToEdit.setWorkoutName(wn);
-                hasChanged = true;
-            }
+            Parser.validateName(wn, "Workout");
+            workoutToEdit.setWorkoutName(wn);
+            hasChanged = true;
         }
         if (en != null && !en.isEmpty()) {
-            if (workout.getExerciseByName(en) != null) {
-                ui.showMessage("An exercise named '" + en + "' already exists!");
-            } else {
-                exerciseToEdit.setExerciseName(en);
-                hasChanged = true;
-            }
-        }
-        if (wt != null && !wt.isEmpty()) {
-            int wtInt = validInput(wt, ui);
-            if (wtInt >= 0) {
-                exerciseToEdit.setWeight(wtInt);
-                hasChanged = true;
-            }
+            Parser.validateName(en, "Exercise");
+            exerciseToEdit.setExerciseName(en);
+            hasChanged = true;
         }
 
         if (s != null && !s.isEmpty()) {
@@ -249,16 +236,13 @@ public class EditCommand extends Command{
      *                      If {@code null} or blank, no changes are applied.
      * @param workoutToEdit The {@link Workout} whose name may be updated via {@code wn/}.
      */
-    private void applyWorkoutEdits(String editLine, Workout workoutToEdit, Ui ui, WorkoutList workouts) {
+    private void applyWorkoutEdits(String editLine, Workout workoutToEdit) throws GitSwoleException {
         if (editLine == null || editLine.isBlank()) {
             return;
         }
         String wn = Parser.parseValue(editLine, "wn/");
         if (wn != null && !wn.isEmpty()) {
-            if (workouts.getWorkoutByName(wn) != null) {
-                ui.showMessage("A workout named '" + wn + "' already exists!");
-                return;
-            }
+            Parser.validateName(wn, "Workout");
             workoutToEdit.setWorkoutName(wn);
             hasChanged = true;
         }
