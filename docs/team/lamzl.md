@@ -63,6 +63,13 @@ character.
 
 ---
 
+## Community
+
+* PRs reviewed (with non-trivial review comments): 
+* Reported bugs and suggestions for other teams in the class: T11-2 (TradeLog)
+
+---
+
 ### Documentation
 
 #### User Guide
@@ -81,10 +88,3 @@ character.
 * Added PlantUML sequence diagrams: `classDiagram.puml`,
   `DeleteSD.puml`, `StorageSave.puml`, `StorageLoad.puml`.
 * Added Instructions for Manual Testing for storage and delete classes.
-
----
-
-## Community
-
-* PRs reviewed (with non-trivial review comments): 
-* Reported bugs and suggestions for other teams in the class: T11-2 (TradeLog)
