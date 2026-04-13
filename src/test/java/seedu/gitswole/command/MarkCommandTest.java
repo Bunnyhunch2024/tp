@@ -171,4 +171,26 @@ public class MarkCommandTest {
         new MarkCommand("mark w/push day").execute(workouts, ui);
         assertTrue(workouts.getWorkoutByName("push day").isDone());
     }
+
+    @Test
+    @DisplayName("mark w/WORKOUT — marking an already-marked workout shows already-marked message")
+    void mark_alreadyMarked_showsAlreadyMarkedMessage() throws GitSwoleException {
+        Workout push = new Workout("push");
+        push.addExercise(new Exercise("bench", 0, 0, 0)); // add this
+        workouts.addWorkout(push);
+        new MarkCommand("mark w/push").execute(workouts, ui);
+        outContent.reset();
+        new MarkCommand("mark w/push").execute(workouts, ui);
+        assertTrue(outContent.toString().contains("already marked as done"));
+    }
+
+    @Test
+    @DisplayName("mark w/WORKOUT — marking actually changes state when previously unmarked")
+    void mark_previouslyUnmarked_changesState() throws GitSwoleException {
+        Workout push = new Workout("push");
+        push.addExercise(new Exercise("bench", 0, 0, 0)); // add this
+        workouts.addWorkout(push);
+        new MarkCommand("mark w/push").execute(workouts, ui);
+        assertTrue(workouts.getWorkoutByName("push").isDone());
+    }
 }

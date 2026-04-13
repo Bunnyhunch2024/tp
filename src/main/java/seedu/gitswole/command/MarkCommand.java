@@ -74,6 +74,18 @@ public class MarkCommand extends Command {
                     "Cannot mark \"" + target.getWorkoutName() + "\" as done because it has no exercises!");
         }
 
+        if (isDone && target.isDone()) {
+            ui.showMessage("'" + workoutName + "' is already marked as done!");
+            ui.showLine();
+            return;
+        }
+
+        if (!isDone && !target.isDone()) {
+            ui.showMessage("'" + workoutName + "' is already unmarked!");
+            ui.showLine();
+            return;
+        }
+
         target.markDone(isDone);
         LOGGER.log(Level.INFO, "Workout ''{0}'' marked as {1}",
                 new Object[]{workoutName, isDone ? "done" : "not done"});
