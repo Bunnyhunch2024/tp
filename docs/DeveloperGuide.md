@@ -17,7 +17,7 @@
     - [Mark and Unmark Workout Feature (`MarkCommand`)](#mark-and-unmark-workout-feature-markcommand)
     - [Smart Workout Logging (`LogCommand`)](#smart-workout-logging-logcommand)
     - [Persistent History Storage (`HistoryStorage`)](#persistent-history-storage-historystorage--historytxt)
-    - [History Retrieval (`LogList`)](#history-retrieval-loglist)
+    - [History Retrieval (`LogList`)](#history-retrieval-feature)
     - [Help Command (`HelpCommand`)](#help-command-helpcommand)
     - [Exit Command (`ExitCommand`)](#exit-command-exitcommand)
 5. [Product Scope](#product-scope)
