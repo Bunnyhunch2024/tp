@@ -1,4 +1,4 @@
-# GitSwole Project Portfolio Page (Ethan)
+# GitSwole Project Portfolio Page (Lam Zhen Lei, Ethan)
 
 ## Project: GitSwole
 
