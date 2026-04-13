@@ -63,7 +63,7 @@ character.
 
 ---
 
-## Community
+### Community
 
 * PRs reviewed (with non-trivial review comments): 
 * Reported bugs and suggestions for other teams in the class: T11-2 (TradeLog)
