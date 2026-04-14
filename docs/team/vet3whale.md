@@ -41,6 +41,12 @@ returns the appropriate `Command` subclass.
 - A `hasChanged` flag tracks whether any field was actually modified, preventing false confirmation messages.
 ---
 
+### Code Contributed
+
+[RepoSense Link](https://nus-cs2113-ay2526-s2.github.io/tp-dashboard/?search=vet3whale)
+
+---
+
 ### Project Management
 
 * **Architectural Foundation:** Designed and implemented the end-to-end skeleton of the application
@@ -57,12 +63,6 @@ returns the appropriate `Command` subclass.
   missing flags, unknown workout names, and unknown exercise names, with usage hints embedded in
   the error output.
     * *Example:* `edit w/` with no name produces `Missing name of workout. Usage: edit w/WORKOUT_NAME or edit w/WORKOUT_NAME e/EXERCISE`.
-
----
-
-### Code Contributed
-
-[RepoSense Link](https://nus-cs2113-ay2526-s2.github.io/tp-dashboard/?search=vet3whale)
 
 ---
 
