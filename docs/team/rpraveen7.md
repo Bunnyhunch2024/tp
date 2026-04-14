@@ -61,18 +61,12 @@ integrity during execution.
 
 ### Enhancements to Existing Features
 
-* **Data Integrity & Overflow Protection:** Refactored `Parser` with `parseAndValidateInt` to prevent numeric 
-overflows (e.g., `wt/999999`) and implemented physical limits (1000kg) to ensure data quality in storage.
-* **Context-Aware Guidance:** Developed a global exercise search utility in `LogCommand` to proactively suggest 
-the correct workout if an exercise is logged in the wrong session (e.g., *"Did you mean to log under Push Day?"*).
-* **Strict Command Validation:** Enhanced parser to detect unrecognized flags (e.g., `wol/` vs `wt/`) and resolve 
-collisions (e.g., `remark/` bleeding into other fields), preventing silent failures from user typos.
-* **Header Collision Resolution:** Fixed a critical bug in `HistoryStorage` where shorter workout names (e.g., "ARM") 
-incorrectly matched longer suffixes (e.g., "WARM"). Implemented precise suffix-matching for accurate history attribution.
-* **Operational Guardrails:** Added validation to block empty workout session creation or marking workouts 
-without exercises as "done," ensuring a robust "Define -> Log" workflow.
-* **Case-Insensitive Input:** Optimized `ListCommand` and `LogCommand` to handle input case-insensitively, 
-significantly reducing user friction. (e.g., `list w/puSh dAy` targets "Push Day").
+* **Data Integrity:** Refactored `Parser` to prevent numeric overflows and enforced physical limits (e.g. 1000kg).
+* **Smart Guidance:** Implemented global search to suggest correct workouts when logging under the wrong session.
+* **Strict Validation:** Enhanced parser to detect unrecognized flags and resolve string parsing collisions.
+* **Collision Resolution:** Fixed bug where shorter names (e.g. "ARM") matched longer suffixes (e.g. "WARM") in storage.
+* **Operational Guardrails:** Blocked creation of empty sessions or marking exercise-less workouts as complete.
+* **UX Optimization:** Implemented full case-insensitivity across all commands to reduce user input friction.
 
 ---
 
@@ -109,5 +103,4 @@ logic and file format specifications for `history.txt`.
   Command, Storage, and Assets.
     * `architectureSD.puml`: Architectural sequence diagram tracing the end-to-end lifecycle of an `add` command 
   from input to persistence.
-
 ---
