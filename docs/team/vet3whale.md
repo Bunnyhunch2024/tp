@@ -51,12 +51,6 @@ Given below are my contributions to the project.
 
 ---
 
-### Code Contributed
-
-[RepoSense Link](https://nus-cs2113-ay2526-s2.github.io/tp-dashboard/?search=vet3whale)
-
----
-
 ### Project Management
 
 * **Architectural Foundation:** Designed and implemented the end-to-end skeleton of the application
@@ -91,6 +85,13 @@ Given below are my contributions to the project.
 * Created PlantUML sequence diagrams illustrating the `EditCommand` execution flow for both
   the edit-workout and edit-exercise scenarios.
 * Developed Instruction Manual with an expected workflow section.
+
+---
+
+### Code Contributed
+
+[RepoSense Link](https://nus-cs2113-ay2526-s2.github.io/tp-dashboard/?search=vet3whale)
+
 
 ---
 
